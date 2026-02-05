@@ -1,7 +1,7 @@
 // const axios = require("axios").default;
 import axios from "axios";
 // const url = "https://art-selling-website.onrender.com"
-const url = "http://localhost:8000";
+const url = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
 export const getAllUser = async (page,limit) => {
   return await axios({

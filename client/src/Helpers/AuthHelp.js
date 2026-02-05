@@ -1,6 +1,6 @@
 
 // const url = "https://art-selling-website.onrender.com";
-const url = "http://localhost:8000";
+const url = process.env.REACT_APP_API_URL || "http://localhost:8000";
 async function Autho() {
   try {
     const response = await fetch(`${url}/auth`, {
