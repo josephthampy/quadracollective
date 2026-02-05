@@ -1,0 +1,25 @@
+.common__section {
+  background: url("../../Assets/images/bg.jpg");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  padding-top: 150px;
+}
+
+.common__section h2 {
+  color: #fff;
+}
+
+/* Detail / inner pages variant: beige + deep red theme, half height */
+.common__section.common__section--detail {
+  background: #f5e6d3;
+  background-image: none;
+  padding-top: 75px; /* half of 150px */
+  padding-bottom: 40px;
+  border-bottom: 1px solid rgba(139, 0, 0, 0.2);
+}
+
+.common__section.common__section--detail h2 {
+  color: #8b0000;
+  font-weight: 600;
+}

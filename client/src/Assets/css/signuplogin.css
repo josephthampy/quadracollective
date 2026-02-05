@@ -1,0 +1,112 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,500;0,700;0,900;1,500&display=swap');
+
+
+* {
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #f5e6d3 0%, #e8d4b0 50%, #f5e6d3 100%);
+}
+
+
+.form {
+    background: rgba(245, 230, 211, 0.95);
+    color: #5d4037;
+    padding: 2em;
+    text-align: center;
+    width: 30%;
+    box-shadow:
+        0 2.8px 2.2px rgba(139, 0, 0, 0.034),
+        0 6.7px 5.3px rgba(139, 0, 0, 0.048),
+        0 12.5px 10px rgba(139, 0, 0, 0.06),
+        0 22.3px 17.9px rgba(139, 0, 0, 0.072),
+        0 41.8px 33.4px rgba(139, 0, 0, 0.086),
+        0 50px 50px rgba(139, 0, 0, 0.12);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid rgba(139, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+@media only screen and (max-width: 992px) {
+    .form{
+        width: 70%;
+    }
+}
+
+
+.title {
+    text-align: center;
+    margin-bottom: 0.5em;
+    font-weight: 300;
+    font-size: 2em;
+    font-weight: 500;
+    color: #8b0000;
+}
+
+.content div input {
+    width: 80%;
+    padding: 0.5em;
+    margin: 0.5em 0;
+    box-sizing: border-box;
+    border: none;
+    outline: none;
+    background-color: rgba(245, 230, 211, 0.8);
+    border-bottom: 1.5px solid #8b0000;
+    color: #5d4037;
+}
+
+.input {
+    color: #5d4037;
+}
+
+.button2 {
+    margin: 2em auto 2em;
+    padding: 0.5em 2em;
+    cursor: pointer;
+    color: #f5e6d3;
+    border: #8b0000 3px solid;
+    border-radius: 20px;
+    transition: ease-in 0.35s;
+    font-family: 'poppins';
+    background: #8b0000;
+    font-weight: 500;
+}
+
+.button2:hover {
+    color: #8b0000;
+    border: #8b0000 3px solid;
+    background-color: #f5e6d3;
+}
+
+.aha {
+    font-size: 15px;
+    font-weight: 300;
+    text-align: center;
+    color: #5d4037;
+}
+
+a {
+    font-weight: 700;
+    color: #8b0000;
+}
+
+span {
+    color: #8b0000;
+}
+
+.material-icons {
+    font-size: 4em;
+}
+
+
+#message {
+    color: red;
+    font-size: 0.7em;
+}
