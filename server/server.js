@@ -1,5 +1,12 @@
 const express = require('express');
-require('./config/db');
+const mongoose = require('mongoose');
+require('dotenv').config();
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('Database Connected'))
+  .catch(err => console.error(err));
+
 const app = express();
 const cookieParser = require('cookie-parser')
 const initRoute = require('./routers/initRoute');
