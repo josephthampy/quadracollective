@@ -354,13 +354,24 @@ module.exports.getAPost = async (req, res) => {
   };
   try {
     const { id } = req.params;
-    Post.findOne({ _id: id })
-      .select("title description price post images count createdAt")
-      .then((data) => {
-        response.success = true;
-        response.result = data;
-        return res.status(200).send(response);
-      });
+    const { Pool } = require('pg');
+    const pool = new Pool({
+      connectionString: process.env.MONGO_URI,
+    });
+    
+    const result = await pool.query(
+      'SELECT id, title, description, price, post, images, count, created_at as "createdAt" FROM posts WHERE id = $1',
+      [id]
+    );
+    
+    if (result.rows.length > 0) {
+      response.success = true;
+      response.result = result.rows[0];
+      return res.status(200).send(response);
+    } else {
+      response.message = "Post not found";
+      return res.status(404).send(response);
+    }
   } catch (err) {
     console.log("Error", err);
     response.message = "Something went wrong!";
@@ -381,25 +392,27 @@ module.exports.getAllPosts = async (req, res) => {
   const limit = parseInt(req.query.limit) || 12;
   const startIndex = (page - 1) * limit;
   try {
-    await Post.find({})
-      .sort({ createdAt: -1 })
-      .select("title description price post images count createdAt isSold")
-      .then((result) => {
-        if (result.length > 0) {
-          totalPage = Math.ceil(result.length / limit);
-          result = result.slice(startIndex, page * limit);
-          response.success = true;
-          response.errMessage = undefined;
-          response.message = undefined;
-          response.result = result;
-          response.totalPage = totalPage;
-        } else {
-          response.errMessage = undefined;
-          response.totalPage = 1;
-          response.message = "No results found";
-        }
-        return res.status(200).send(response);
-      });
+    const { Pool } = require('pg');
+    const pool = new Pool({
+      connectionString: process.env.MONGO_URI,
+    });
+    
+    const result = await pool.query(
+      'SELECT id, title, description, price, post, images, count, created_at as "createdAt", is_sold as "isSold" FROM posts ORDER BY created_at DESC'
+    );
+    
+    if (result.rows.length > 0) {
+      const totalPage = Math.ceil(result.rows.length / limit);
+      const paginatedResults = result.rows.slice(startIndex, page * limit);
+      response.success = true;
+      response.result = paginatedResults;
+      response.totalPage = totalPage;
+    } else {
+      response.message = "No posts found";
+      response.totalPage = 0;
+    }
+    
+    return res.status(200).send(response);
   } catch (err) {
     console.log("Error", err);
     response.message = "Something went wrong!";
