@@ -108,17 +108,35 @@ module.exports.postArt = async (req, res) => {
       })
       .catch((err) => {
         console.log('Database save error:', err);
-        // For testing: return success even if DB fails
-        response.success = true;
-        response.message = "Posted successfully (test mode - DB not connected)";
-        res.status(200).send(response);
+        response.errMessage = err.message;
+        response.message = "Failed to save post to database";
+        // Delete uploaded images on error
+        files.forEach((file) => {
+          try {
+            if (fs.existsSync(file.path)) {
+              fs.unlinkSync(file.path);
+            }
+          } catch (e) {
+            console.log("Error cleaning up image:", e);
+          }
+        });
+        return res.status(500).send(response);
       });
   } catch (err) {
     console.log('Controller error:', err);
-    // For testing: return success even if DB fails
-    response.success = true;
-    response.message = "Posted successfully (test mode - DB not connected)";
-    res.status(200).send(response);
+    response.errMessage = err.message;
+    response.message = "Server error while processing post";
+    // Delete uploaded images on error
+    files.forEach((file) => {
+      try {
+        if (fs.existsSync(file.path)) {
+          fs.unlinkSync(file.path);
+        }
+      } catch (e) {
+        console.log("Error cleaning up image:", e);
+      }
+    });
+    return res.status(500).send(response);
   }
 };
 
