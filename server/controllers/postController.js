@@ -1,4 +1,3 @@
-const Post = require("../models/post");
 const fs = require("fs");
 const path = require("path");
 
@@ -151,23 +150,29 @@ module.exports.getPosts = async (req, res) => {
   console.log('getPosts called with:', { page, limit, startIndex });
   
   try {
-    // Use database pagination for better performance
-    const totalPosts = await Post.countDocuments({ isSold: false });
+    const { Pool } = require('pg');
+    const pool = new Pool({
+      connectionString: process.env.MONGO_URI,
+    });
+    
+    // Get total count of unsold posts
+    const countResult = await pool.query('SELECT COUNT(*) FROM posts WHERE is_sold = false');
+    const totalPosts = parseInt(countResult.rows[0].count);
     const totalPage = Math.ceil(totalPosts / limit);
     
     console.log('Total posts:', totalPosts, 'Total pages:', totalPage);
     
-    const result = await Post.find({ isSold: false })
-      .sort({ createdAt: -1 })
-      .select("title description price post images count createdAt")
-      .skip(startIndex)
-      .limit(limit);
+    // Get posts with pagination
+    const result = await pool.query(
+      'SELECT title, description, price, post, images, count, created_at FROM posts WHERE is_sold = false ORDER BY created_at DESC LIMIT $1 OFFSET $2',
+      [limit, startIndex]
+    );
     
-    console.log('Found posts:', result.length);
+    console.log('Found posts:', result.rows.length);
     
-    if (result.length > 0) {
+    if (result.rows.length > 0) {
       response.success = true;
-      response.result = result;
+      response.result = result.rows;
       response.totalPage = totalPage;
     } else {
       response.message = "No results found";
@@ -190,15 +195,18 @@ module.exports.getSomePosts = async (req, res) => {
     result: "",
   };
   try {
-    await Post.find({ isSold: false })
-      .sort({ createdAt: -1 })
-      .select("title description price post images count createdAt")
-      .limit(8)
-      .then((data) => {
-        response.success = true;
-        response.result = data;
-        return res.status(200).send(response);
-      });
+    const { Pool } = require('pg');
+    const pool = new Pool({
+      connectionString: process.env.MONGO_URI,
+    });
+    
+    const result = await pool.query(
+      'SELECT title, description, price, post, images, count, created_at FROM posts WHERE is_sold = false ORDER BY created_at DESC LIMIT 8'
+    );
+    
+    response.success = true;
+    response.result = result.rows;
+    return res.status(200).send(response);
   } catch (err) {
     console.log("Error", err);
     response.message = "Something went wrong!";
