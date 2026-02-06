@@ -354,14 +354,24 @@ module.exports.getAPost = async (req, res) => {
   };
   try {
     const { id } = req.params;
+    console.log('getAPost called with id:', id, 'type:', typeof id);
+    
     const { Pool } = require('pg');
     const pool = new Pool({
       connectionString: process.env.MONGO_URI,
     });
     
+    // Try to parse as integer first, if fails use as string
+    let postId = id;
+    if (!isNaN(id)) {
+      postId = parseInt(id);
+    }
+    
+    console.log('Using postId:', postId, 'type:', typeof postId);
+    
     const result = await pool.query(
       'SELECT id, title, description, price, post, images, count, created_at as "createdAt" FROM posts WHERE id = $1',
-      [id]
+      [postId]
     );
     
     if (result.rows.length > 0) {
@@ -400,6 +410,9 @@ module.exports.getAllPosts = async (req, res) => {
     const result = await pool.query(
       'SELECT id, title, description, price, post, images, count, created_at as "createdAt", is_sold as "isSold" FROM posts ORDER BY created_at DESC'
     );
+    
+    console.log('getAllPosts found:', result.rows.length, 'posts');
+    console.log('Sample post IDs:', result.rows.slice(0, 3).map(p => ({ id: p.id, type: typeof p.id })));
     
     if (result.rows.length > 0) {
       const totalPage = Math.ceil(result.rows.length / limit);
