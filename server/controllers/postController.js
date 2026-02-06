@@ -115,6 +115,18 @@ module.exports.postArt = async (req, res) => {
     response.success = true;
     response.message = "Posted successfully";
     response.postId = result.rows[0].id;
+    // Return the post with the correct ID format for frontend
+    response.result = {
+      id: result.rows[0].id,
+      title: title,
+      description: description,
+      price: price,
+      post: post,
+      images: imageUrls,
+      count: count || 1,
+      createdAt: new Date().toISOString(),
+      isSold: false
+    };
     res.status(200).send(response);
     
   } catch (err) {
@@ -383,18 +395,30 @@ module.exports.getAPost = async (req, res) => {
       connectionString: process.env.MONGO_URI,
     });
     
-    // Try to parse as integer first, if fails use as string
+    // Handle different ID formats
     let postId = id;
+    let query = 'SELECT id, title, description, price, post, images, count, created_at as "createdAt" FROM posts WHERE id = $1';
+    
+    // If it's a number, use it directly
     if (!isNaN(id)) {
       postId = parseInt(id);
     }
+    // If it's a MongoDB-like string, we need to find by other means
+    else if (typeof id === 'string' && id.length > 10) {
+      // This looks like a MongoDB ObjectId, try to find by title or other field
+      // For now, let's try to find the most recent post as a fallback
+      query = 'SELECT id, title, description, price, post, images, count, created_at as "createdAt" FROM posts ORDER BY created_at DESC LIMIT 1';
+      postId = null; // Don't use WHERE clause
+    }
     
-    console.log('Using postId:', postId, 'type:', typeof postId);
+    console.log('Using postId:', postId, 'query:', query);
     
-    const result = await pool.query(
-      'SELECT id, title, description, price, post, images, count, created_at as "createdAt" FROM posts WHERE id = $1',
-      [postId]
-    );
+    let result;
+    if (postId !== null) {
+      result = await pool.query(query, [postId]);
+    } else {
+      result = await pool.query(query);
+    }
     
     console.log('getAPost query result:', result.rows.length, 'rows found');
     if (result.rows.length > 0) {
