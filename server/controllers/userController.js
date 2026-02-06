@@ -15,7 +15,8 @@ module.exports.update = async (req, res) => {
     if (req.file) {
       temp = req.file.filename.split(".");
       fileType = temp[temp.length - 1];
-      image = process.env.URL + "/images/UserPic/" + req.file.filename;
+      const baseUrl = process.env.URL || "https://quadracollective-production.up.railway.app";
+      image = baseUrl + "/images/UserPic/" + req.file.filename;
     } else if (oldImage) {
       image = oldImage;
     }

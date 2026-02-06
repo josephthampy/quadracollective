@@ -250,7 +250,8 @@ module.exports.updatePost = async (req, res) => {
     if (req.file) {
       temp = req.file.filename.split(".");
       fileType = temp[temp.length - 1];
-      post = process.env.URL + "/images/Posts/" + req.file.filename;
+      const baseUrl = process.env.URL || "https://quadracollective-production.up.railway.app";
+      post = baseUrl + "/images/Posts/" + req.file.filename;
     } else if (oldPost) {
       post = oldPost;
     }
