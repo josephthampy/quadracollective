@@ -110,6 +110,31 @@ app.get("/test-images", (req, res) => {
     });
   }
 });
+
+// Test admin operations
+app.get("/test-admin", async (req, res) => {
+  try {
+    const { Pool } = require('pg');
+    const pool = new Pool({
+      connectionString: process.env.MONGO_URI,
+    });
+    
+    const result = await pool.query('SELECT id, title FROM posts ORDER BY id ASC LIMIT 5');
+    
+    res.json({
+      success: true,
+      message: "Admin operations test",
+      posts: result.rows,
+      sampleIds: result.rows.map(p => ({ id: p.id, type: typeof p.id }))
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Admin test failed",
+      error: error.message
+    });
+  }
+});
 app.use(express.json());
 
 initRoute(app);

@@ -225,7 +225,7 @@ module.exports.deletePost = async (req, res) => {
   try {
     const { Pool } = require('pg');
     const pool = new Pool({
-      connectionString: process.env.DATABASE_URL,
+      connectionString: process.env.MONGO_URI,
     });
     
     console.log('deletePost called with id:', id, 'type:', typeof id);
@@ -237,8 +237,10 @@ module.exports.deletePost = async (req, res) => {
     }
     
     // First get the post to find image URLs
+    console.log('deletePost: Looking for post with id:', postId);
     const postResult = await pool.query('SELECT * FROM posts WHERE id = $1', [postId]);
     
+    console.log('deletePost: Found', postResult.rows.length, 'posts');
     if (postResult.rows.length > 0) {
       const post = postResult.rows[0];
       
@@ -333,8 +335,10 @@ module.exports.updatePost = async (req, res) => {
       postId
     ];
     
+    console.log('updatePost: Executing update with values:', values);
     const result = await pool.query(updateQuery, values);
     
+    console.log('updatePost: Update result:', result.rows.length, 'rows affected');
     if (result.rows.length === 0) {
       response.message = "Post not found";
       return res.status(404).send(response);
