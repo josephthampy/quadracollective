@@ -36,6 +36,24 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 app.get("/", (req, res) => {res.send("Hello World")});
+
+// Test database connection
+app.get("/test-db", async (req, res) => {
+  try {
+    const count = await require('./models/Post').countDocuments();
+    res.json({ 
+      success: true, 
+      message: "Database connected successfully",
+      totalPosts: count 
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false, 
+      message: "Database connection failed",
+      error: error.message 
+    });
+  }
+});
 app.use(express.json());
 
 initRoute(app);
