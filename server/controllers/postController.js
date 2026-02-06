@@ -57,8 +57,10 @@ module.exports.postArt = async (req, res) => {
 
   // Files array is already in the order they were sent from frontend
   // Create image URLs preserving that order
+  const baseUrl = process.env.URL || "https://quadracollective-production.up.railway.app";
+  console.log('Using baseUrl:', baseUrl); // Debug log
   const imageUrls = files.map(
-    (file) => process.env.URL + "/images/Posts/" + file.filename
+    (file) => baseUrl + "/images/Posts/" + file.filename
   );
 
   // Clamp main index to valid range
