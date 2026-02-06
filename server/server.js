@@ -1,17 +1,19 @@
 const express = require('express');
-const mongoose = require('mongoose');
+const { Pool } = require('pg');
 require('dotenv').config();
 
-// Connect to MongoDB with better options
-mongoose.connect(process.env.MONGO_URI, {
-  serverSelectionTimeoutMS: 10000, // 10 second timeout
-  bufferCommands: false, // Disable mongoose buffering
-  bufferMaxEntries: 0 // Disable mongoose buffering
-})
-  .then(() => console.log('Database Connected'))
+// PostgreSQL connection
+const pool = new Pool({
+  connectionString: process.env.MONGO_URI, // Using same variable name for compatibility
+});
+
+// Test database connection
+pool.query('SELECT NOW()')
+  .then(res => {
+    console.log('Database Connected');
+  })
   .catch(err => {
-    console.error('MongoDB connection failed:', err);
-    // Don't exit, let the server run but DB will fail gracefully
+    console.error('Database connection failed:', err);
   });
 
 const app = express();
@@ -47,27 +49,40 @@ app.get("/", (req, res) => {res.send("Hello World")});
 // Test database connection
 app.get("/test-db", async (req, res) => {
   try {
-    // Wait for mongoose to connect
-    if (mongoose.connection.readyState !== 1) {
-      return res.status(500).json({ 
-        success: false, 
-        message: "Database not connected yet",
-        state: mongoose.connection.readyState 
-      });
-    }
-    
-    const count = await require('./models/post').countDocuments();
+    const result = await pool.query('SELECT COUNT(*) FROM posts');
     res.json({ 
       success: true, 
       message: "Database connected successfully",
-      totalPosts: count 
+      totalPosts: parseInt(result.rows[0].count)
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: "Database connection failed",
-      error: error.message 
-    });
+    // If table doesn't exist, create it
+    if (error.message.includes('relation "posts" does not exist')) {
+      await pool.query(`
+        CREATE TABLE posts (
+          id SERIAL PRIMARY KEY,
+          title VARCHAR(255) NOT NULL,
+          description TEXT NOT NULL,
+          price DECIMAL(10,2) NOT NULL,
+          post VARCHAR(500) NOT NULL,
+          images TEXT[],
+          count INTEGER DEFAULT 1,
+          is_sold BOOLEAN DEFAULT FALSE,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+      res.json({ 
+        success: true, 
+        message: "Database connected and table created",
+        totalPosts: 0
+      });
+    } else {
+      res.status(500).json({ 
+        success: false, 
+        message: "Database connection failed",
+        error: error.message 
+      });
+    }
   }
 });
 

@@ -91,41 +91,37 @@ module.exports.postArt = async (req, res) => {
   const post = imageUrls[mainIndex]; // main image based on mainIndex
 
   try {
-    const postArt = new Post({
+    const { Pool } = require('pg');
+    const pool = new Pool({
+      connectionString: process.env.MONGO_URI,
+    });
+    
+    const query = `
+      INSERT INTO posts (title, description, price, post, images, count)
+      VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING id
+    `;
+    
+    const values = [
       title,
       description,
-      price,
+      parseFloat(price),
       post, // main image
-      images: imageUrls, // images array in original order
-      count: count || 1,
-    });
-    await postArt
-      .save()
-      .then((data) => {
-        response.success = true;
-        response.message = "Posted successfully";
-        res.status(200).send(response);
-      })
-      .catch((err) => {
-        console.log('Database save error:', err);
-        response.errMessage = err.message;
-        response.message = "Failed to save post to database";
-        // Delete uploaded images on error
-        files.forEach((file) => {
-          try {
-            if (fs.existsSync(file.path)) {
-              fs.unlinkSync(file.path);
-            }
-          } catch (e) {
-            console.log("Error cleaning up image:", e);
-          }
-        });
-        return res.status(500).send(response);
-      });
+      imageUrls, // images array
+      parseInt(count) || 1
+    ];
+    
+    const result = await pool.query(query, values);
+    
+    response.success = true;
+    response.message = "Posted successfully";
+    response.postId = result.rows[0].id;
+    res.status(200).send(response);
+    
   } catch (err) {
-    console.log('Controller error:', err);
+    console.log('Database save error:', err);
     response.errMessage = err.message;
-    response.message = "Server error while processing post";
+    response.message = "Failed to save post to database";
     // Delete uploaded images on error
     files.forEach((file) => {
       try {
