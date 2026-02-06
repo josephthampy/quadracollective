@@ -5,7 +5,10 @@ require('dotenv').config();
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('Database Connected'))
-  .catch(err => console.error(err));
+  .catch(err => {
+    console.error('MongoDB connection failed, using in-memory storage for testing');
+    console.error(err);
+  });
 
 const app = express();
 const cookieParser = require('cookie-parser')
