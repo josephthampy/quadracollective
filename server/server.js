@@ -57,6 +57,31 @@ app.get("/test-db", async (req, res) => {
     });
   }
 });
+
+// Test image serving
+app.get("/test-images", (req, res) => {
+  const fs = require('fs');
+  const path = require('path');
+  const imagesDir = path.join(__dirname, 'public/images/Posts');
+  
+  try {
+    const files = fs.readdirSync(imagesDir);
+    res.json({
+      success: true,
+      message: "Images directory accessible",
+      imagesDir: imagesDir,
+      files: files,
+      testUrls: files.map(file => `${process.env.URL || 'https://quadracollective-production.up.railway.app'}/images/Posts/${file}`)
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Images directory not accessible",
+      error: error.message,
+      imagesDir: imagesDir
+    });
+  }
+});
 app.use(express.json());
 
 initRoute(app);
