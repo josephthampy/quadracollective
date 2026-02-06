@@ -160,9 +160,7 @@ const Post = () => {
 
   const handleAdd = async (e) => {
     e.preventDefault();
-    console.log('Post button clicked');
-    console.log('Admin password:', adminPassword ? 'exists' : 'missing');
-    console.log('Posts data:', posts);
+    toast.info("Post button clicked - processing...");
     
     if (!adminPassword) {
       toast.error("Admin authentication required");
@@ -187,10 +185,10 @@ const Post = () => {
     }
 
     try {
-      // Ensure we send the current mainIndex state value
+      toast.info("Uploading art...");
       const formData = {
         ...posts,
-        mainIndex: mainIndex, // Use current state, not stale value from posts
+        mainIndex: mainIndex,
       };
       
       const response = await postArt(formData, adminPassword);
@@ -202,14 +200,14 @@ const Post = () => {
       }
     } catch (err) {
       const errorMessage = err.response?.data?.message || err.message || "Failed to post";
+      console.log("Error details:", err.response?.data || err);
       if (errorMessage.includes("password") || errorMessage.includes("Unauthorized")) {
         toast.error("Invalid admin password. Please login again.");
         localStorage.removeItem("adminPassword");
         navigate("/admin/login");
       } else {
-        toast.error(errorMessage);
+        toast.error("Upload failed: " + errorMessage);
       }
-      console.log("Error details:", err.response?.data || err);
     }
   };
 
