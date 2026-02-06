@@ -40,7 +40,7 @@ app.get("/", (req, res) => {res.send("Hello World")});
 // Test database connection
 app.get("/test-db", async (req, res) => {
   try {
-    const count = await require('./models/Post').countDocuments();
+    const count = await require('./models/post').countDocuments();
     res.json({ 
       success: true, 
       message: "Database connected successfully",
