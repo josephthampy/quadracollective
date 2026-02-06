@@ -3,7 +3,6 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Container, Row, Col } from "reactstrap";
 import { toast } from "react-toastify";
 import Footer from "../Components/Footer/Footer";
-import CommonSection from "../Components/Common-section/CommonSection";
 import { getAPost } from "../Services/Art";
 import "../Assets/css/singlepost.css";
 

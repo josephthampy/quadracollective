@@ -9,7 +9,6 @@ import "../Assets/css/allProduct.css";
 
 function Admin() {
   const [products, setProducts] = useState([]);
-  const [adminPassword, setAdminPassword] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,10 +16,33 @@ function Admin() {
     if (!storedPassword) {
       toast.error("Unauthorized access. Admin login required.");
       navigate("/");
-    } else {
-      setAdminPassword(storedPassword);
-      loadPosts();
+      return;
     }
+    
+    const fetchPosts = async () => {
+      try {
+        const response = await getAllPosts(1, 100, storedPassword);
+        if (response.data.success) {
+          setProducts(response.data.result || []);
+        } else {
+          toast.error(response.data.message || "Failed to load posts");
+          if (response.data.message?.includes("password") || response.data.message?.includes("Unauthorized")) {
+            localStorage.removeItem("adminPassword");
+            navigate("/admin/login");
+          }
+        }
+      } catch (err) {
+        const errorMsg = err.response?.data?.message || "Failed to load posts";
+        toast.error(errorMsg);
+        if (errorMsg.includes("password") || errorMsg.includes("Unauthorized")) {
+          localStorage.removeItem("adminPassword");
+          navigate("/admin/login");
+        }
+        console.log(err);
+      }
+    };
+    
+    fetchPosts();
   }, [navigate]);
 
   const loadPosts = async () => {

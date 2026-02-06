@@ -27,7 +27,7 @@ function AllProducts() {
     } catch (err) {
       console.log(err);
     }
-  }, [page]);
+  }, [page, limit]);
 
   return (
     <>

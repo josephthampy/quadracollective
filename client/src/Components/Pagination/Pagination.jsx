@@ -106,6 +106,7 @@ const Pagination = ({ pageChange, page, totalPages }) => {
               </Page>
             );
           }
+          return null;
         })}
         <Page>
           <Num

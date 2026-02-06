@@ -1,7 +1,6 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect } from "react";
 import "./header.css";
 import { Container } from "reactstrap";
-import { useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 
 const NAV__LINKS = [
@@ -12,7 +11,6 @@ const NAV__LINKS = [
 ];
 
 const Header = () => {
-  const navigate = useNavigate();
   const headerRef = useRef(null);
   const menuRef = useRef(null);
 

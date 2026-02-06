@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import HeroSection from "../Components/HeroSection/HeroSection";
 import { Container, Row, Col, Spinner, Alert } from "reactstrap";
-import { Link } from "react-router-dom";
 import { getPosts } from "../Services/Art";
 import ProductCard from "../Components/Cards/ProductCard";
 import "../Assets/css/s.css";
