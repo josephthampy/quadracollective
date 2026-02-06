@@ -164,7 +164,7 @@ module.exports.getPosts = async (req, res) => {
     
     // Get posts with pagination
     const result = await pool.query(
-      'SELECT title, description, price, post, images, count, created_at FROM posts WHERE is_sold = false ORDER BY created_at DESC LIMIT $1 OFFSET $2',
+      'SELECT id, title, description, price, post, images, count, created_at as "createdAt" FROM posts WHERE is_sold = false ORDER BY created_at DESC LIMIT $1 OFFSET $2',
       [limit, startIndex]
     );
     
@@ -201,7 +201,7 @@ module.exports.getSomePosts = async (req, res) => {
     });
     
     const result = await pool.query(
-      'SELECT title, description, price, post, images, count, created_at FROM posts WHERE is_sold = false ORDER BY created_at DESC LIMIT 8'
+      'SELECT id, title, description, price, post, images, count, created_at as "createdAt" FROM posts WHERE is_sold = false ORDER BY created_at DESC LIMIT 8'
     );
     
     response.success = true;
@@ -392,11 +392,14 @@ module.exports.getAPost = async (req, res) => {
       [postId]
     );
     
+    console.log('getAPost query result:', result.rows.length, 'rows found');
     if (result.rows.length > 0) {
+      console.log('getAPost returning post:', result.rows[0]);
       response.success = true;
       response.result = result.rows[0];
       return res.status(200).send(response);
     } else {
+      console.log('getAPost: Post not found for id:', postId);
       response.message = "Post not found";
       return res.status(404).send(response);
     }
