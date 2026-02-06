@@ -367,6 +367,7 @@ const Post = () => {
                     />
                   </div>
                   <button
+                    type="button"
                     className="bid__btn d-flex align-items-center gap-5 pad"
                     onClick={handleAdd}
                   >
