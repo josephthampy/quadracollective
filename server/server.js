@@ -4,7 +4,7 @@ require('dotenv').config();
 
 // Connect to MongoDB with better options
 mongoose.connect(process.env.MONGO_URI, {
-  serverSelectionTimeoutMS: 5000, // 5 second timeout
+  serverSelectionTimeoutMS: 10000, // 10 second timeout
   bufferCommands: false, // Disable mongoose buffering
   bufferMaxEntries: 0 // Disable mongoose buffering
 })
@@ -47,6 +47,15 @@ app.get("/", (req, res) => {res.send("Hello World")});
 // Test database connection
 app.get("/test-db", async (req, res) => {
   try {
+    // Wait for mongoose to connect
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(500).json({ 
+        success: false, 
+        message: "Database not connected yet",
+        state: mongoose.connection.readyState 
+      });
+    }
+    
     const count = await require('./models/post').countDocuments();
     res.json({ 
       success: true, 
