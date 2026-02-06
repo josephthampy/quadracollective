@@ -11,10 +11,6 @@ module.exports.postArt = async (req, res) => {
   
   // Validate required fields
   const { title, description, price, count } = req.body;
-  if (!title || !description || !price) {
-    response.message = "Please fill all required fields";
-    return res.status(400).send(response);
-  }
   
   const files = req.files || [];
   
@@ -22,26 +18,16 @@ module.exports.postArt = async (req, res) => {
   const rawMainIndex = req.body?.mainIndex;
   let mainIndex = 0;
   if (rawMainIndex !== undefined && rawMainIndex !== null) {
-    const parsed = parseInt(String(rawMainIndex), 10);
-    if (!isNaN(parsed) && parsed >= 0) {
-      mainIndex = parsed;
-    }
+    mainIndex = parseInt(rawMainIndex, 10);
   }
 
-  // Debug logging
-  console.log('Backend received:');
-  console.log('- Files count:', files.length);
-  console.log('- MainIndex:', rawMainIndex, '-> parsed:', mainIndex);
-  console.log('- File names:', files.map(f => f.filename));
+  console.log('Parsed data:', { title, description, price, count, mainIndex });
+  console.log('Files:', files.map(f => ({ filename: f.filename, size: f.size })));
 
-  // Validate images count (at least 1 and at most 10)
-  if (!files.length) {
-    response.message = "Please upload at least one image";
-    return res.status(400).send(response);
-  }
-
-  if (files.length > 10) {
-    response.message = "You can upload at most 10 images per artwork";
+  // Validate required fields
+  if (!title || !description || !price) {
+    response.message = "Title, description, and price are required";
+    console.log('Validation failed: missing required fields');
     // Clean up uploaded files
     files.forEach((file) => {
       try {
@@ -54,6 +40,34 @@ module.exports.postArt = async (req, res) => {
     });
     return res.status(400).send(response);
   }
+
+  if (files.length === 0) {
+    response.message = "At least one image is required";
+    console.log('Validation failed: no files');
+    return res.status(400).send(response);
+  }
+
+  if (files.length > 10) {
+    response.message = "You can upload at most 10 images per artwork";
+    console.log('Validation failed: too many files');
+    // Clean up uploaded files
+    files.forEach((file) => {
+      try {
+        if (fs.existsSync(file.path)) {
+          fs.unlinkSync(file.path);
+        }
+      } catch (e) {
+        console.log("Error cleaning up image:", e);
+      }
+    });
+    return res.status(400).send(response);
+  }
+
+  // Debug logging
+  console.log('Backend received:');
+  console.log('- Files count:', files.length);
+  console.log('- MainIndex:', rawMainIndex, '-> parsed:', mainIndex);
+  console.log('- File names:', files.map(f => f.filename));
 
   // Files array is already in the order they were sent from frontend
   // Create image URLs preserving that order
