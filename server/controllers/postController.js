@@ -223,38 +223,58 @@ module.exports.deletePost = async (req, res) => {
     errMessage: "",
   };
   try {
-    const posts = await Post.findOneAndDelete({ _id: id });
-    if (posts) {
-      // Collect all image URLs (array + legacy single post field)
+    const { Pool } = require('pg');
+    const pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+    });
+    
+    console.log('deletePost called with id:', id, 'type:', typeof id);
+    
+    // Parse ID as integer if possible
+    let postId = id;
+    if (!isNaN(id)) {
+      postId = parseInt(id);
+    }
+    
+    // First get the post to find image URLs
+    const postResult = await pool.query('SELECT * FROM posts WHERE id = $1', [postId]);
+    
+    if (postResult.rows.length > 0) {
+      const post = postResult.rows[0];
+      
+      // Collect all image URLs
       const imageUrls = [];
-      if (Array.isArray(posts.images) && posts.images.length) {
-        imageUrls.push(...posts.images);
+      if (Array.isArray(post.images) && post.images.length) {
+        imageUrls.push(...post.images);
       }
-      if (posts.post && !imageUrls.includes(posts.post)) {
-        imageUrls.push(posts.post);
+      if (post.post && !imageUrls.includes(post.post)) {
+        imageUrls.push(post.post);
       }
 
       // Delete each image file if it exists on disk
       imageUrls.forEach((url) => {
         try {
           const imageName = url.split("/");
-          const imagepath =
+          const imagePath =
             path.join(__dirname, "../public/images/Posts/") +
             imageName[imageName.length - 1];
-          if (fs.existsSync(imagepath)) {
-            fs.unlinkSync(imagepath);
+          if (fs.existsSync(imagePath)) {
+            fs.unlinkSync(imagePath);
           }
         } catch (e) {
           console.log("Error deleting image:", e);
         }
       });
 
+      // Delete the post from database
+      await pool.query('DELETE FROM posts WHERE id = $1', [postId]);
+      
       response.success = true;
-      response.message = "Post Deleted Successfully";
+      response.message = "Post deleted successfully";
       return res.status(200).send(response);
     } else {
-      response.message = "No Post Found";
-      return res.status(200).send(response);
+      response.message = "Post not found";
+      return res.status(404).send(response);
     }
   } catch (err) {
     console.log("Error", err);
@@ -274,53 +294,55 @@ module.exports.updatePost = async (req, res) => {
     const { id, title, description, price, oldPost, count } = req.body;
     let post;
     if (req.file) {
-      temp = req.file.filename.split(".");
-      fileType = temp[temp.length - 1];
+      const temp = req.file.filename.split(".");
+      const fileType = temp[temp.length - 1];
       const baseUrl = process.env.URL || "https://quadracollective-production.up.railway.app";
       post = baseUrl + "/images/Posts/" + req.file.filename;
     } else if (oldPost) {
       post = oldPost;
     }
-    let post1;
-    if (count > 0) {
-      post1 = await Post.findOneAndUpdate(
-        { _id: id },
-        {
-          $set: {
-            post,
-            title,
-            description,
-            price,
-            count,
-            isSold: false,
-          },
-        },
-        { new: true }
-      );
-    } else {
-      post1 = await Post.findOneAndUpdate(
-        { _id: id },
-        {
-          $set: {
-            post,
-            title,
-            description,
-            price,
-            count,
-          },
-        },
-        { new: true }
-      );
+    
+    console.log('updatePost called with id:', id, 'type:', typeof id);
+    
+    const { Pool } = require('pg');
+    const pool = new Pool({
+      connectionString: process.env.MONGO_URI,
+    });
+    
+    // Parse ID as integer if possible
+    let postId = id;
+    if (!isNaN(id)) {
+      postId = parseInt(id);
     }
-
-    if (!post1) {
+    
+    // Update the post
+    const updateQuery = `
+      UPDATE posts 
+      SET title = $1, description = $2, price = $3, post = $4, count = $5, is_sold = $6 
+      WHERE id = $7
+      RETURNING *
+    `;
+    
+    const values = [
+      title,
+      description,
+      parseFloat(price),
+      post,
+      parseInt(count) || 1,
+      false, // is_sold = false
+      postId
+    ];
+    
+    const result = await pool.query(updateQuery, values);
+    
+    if (result.rows.length === 0) {
       response.message = "Post not found";
       return res.status(404).send(response);
     }
 
     response.success = true;
     response.message = "Post updated successfully";
-    response.result = post1;
+    response.result = result.rows[0];
     res.send(response);
     
     // Delete old image if new one was uploaded
@@ -330,11 +352,7 @@ module.exports.updatePost = async (req, res) => {
         path.join(__dirname, "../public/images/Posts/") +
         imageName[imageName.length - 1];
       if (fs.existsSync(imagePath)) {
-      fs.unlink(imagePath, (err) => {
-        if (err) {
-            console.log("Error deleting old image:", err);
-        }
-      });
+        fs.unlinkSync(imagePath);
       }
     }
   } catch (err) {
