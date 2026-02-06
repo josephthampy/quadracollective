@@ -160,6 +160,10 @@ const Post = () => {
 
   const handleAdd = async (e) => {
     e.preventDefault();
+    console.log('Post button clicked');
+    console.log('Admin password:', adminPassword ? 'exists' : 'missing');
+    console.log('Posts data:', posts);
+    
     if (!adminPassword) {
       toast.error("Admin authentication required");
       navigate("/admin/login");
