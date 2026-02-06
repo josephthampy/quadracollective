@@ -2,12 +2,16 @@ const express = require('express');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI)
+// Connect to MongoDB with better options
+mongoose.connect(process.env.MONGO_URI, {
+  serverSelectionTimeoutMS: 5000, // 5 second timeout
+  bufferCommands: false, // Disable mongoose buffering
+  bufferMaxEntries: 0 // Disable mongoose buffering
+})
   .then(() => console.log('Database Connected'))
   .catch(err => {
     console.error('MongoDB connection failed:', err);
-    process.exit(1); // Exit if database connection fails
+    // Don't exit, let the server run but DB will fail gracefully
   });
 
 const app = express();
