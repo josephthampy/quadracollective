@@ -16,7 +16,7 @@ const Footer = () => {
               />
               <p>
                 QuadraCollective is a curated space for bold, original artwork and
-                creative expression.
+                creative expression...
               </p>
               <p className="mb-0">
                 <strong>Phone:</strong> +91 85904 66169
@@ -30,14 +30,12 @@ const Footer = () => {
             <h5>Instagram</h5>
             <div className="social__links d-flex gap-3 align-items-center">
               <span>
-                <h2>
                 <a
                   href="https://www.instagram.com/quadracollective_?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
                   aria-label="Instagram"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  </h2>
                   <i className="ri-instagram-line"></i>
                 </a>
               </span>
