@@ -18,20 +18,12 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 const cors = require('cors');
 
-app.use(cors());
-
-app.use(function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*'); // or specify a specific domain instead of '*'
-    res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
-  
-    // Intercepts OPTIONS method
-    if ('OPTIONS' === req.method) {
-      res.sendStatus(200);
-    } else {
-      next();
-    }
-  });
+app.use(cors({
+  origin: ['https://quadracollective.vercel.app', 'http://localhost:3000'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Content-Length', 'X-Requested-With', 'x-admin-password'],
+  credentials: true
+}));
 
 app.use(cookieParser())
 
