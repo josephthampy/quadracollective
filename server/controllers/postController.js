@@ -59,8 +59,13 @@ module.exports.postArt = async (req, res) => {
   // Create image URLs preserving that order
   const baseUrl = process.env.URL || "https://quadracollective-production.up.railway.app";
   console.log('Using baseUrl:', baseUrl); // Debug log
+  console.log('Files received:', files.length, files.map(f => f.filename));
   const imageUrls = files.map(
-    (file) => baseUrl + "/images/Posts/" + file.filename
+    (file) => {
+      const url = baseUrl + "/images/Posts/" + file.filename;
+      console.log('Generated URL:', url);
+      return url;
+    }
   );
 
   // Clamp main index to valid range
