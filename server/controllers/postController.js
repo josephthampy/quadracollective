@@ -57,8 +57,9 @@ module.exports.postArt = async (req, res) => {
 
   // Files array is already in the order they were sent from frontend
   // Create image URLs preserving that order
+  const baseUrl = process.env.URL || "https://quadracollective-production.up.railway.app";
   const imageUrls = files.map(
-    (file) => process.env.URL + "/images/Posts/" + file.filename
+    (file) => baseUrl + "/images/Posts/" + file.filename
   );
 
   // Clamp main index to valid range
@@ -248,7 +249,8 @@ module.exports.updatePost = async (req, res) => {
     if (req.file) {
       temp = req.file.filename.split(".");
       fileType = temp[temp.length - 1];
-      post = process.env.URL + "/images/Posts/" + req.file.filename;
+      const baseUrl = process.env.URL || "https://quadracollective-production.up.railway.app";
+      post = baseUrl + "/images/Posts/" + req.file.filename;
     } else if (oldPost) {
       post = oldPost;
     }

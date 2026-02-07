@@ -37,6 +37,26 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 app.get("/", (req, res) => {res.send("Hello World")});
+app.get("/test-db", async (req, res) => {
+  try {
+    const Post = require('./models/post');
+    const count = await Post.countDocuments();
+    res.json({ success: true, message: "Database connected", totalPosts: count });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Database error", error: error.message });
+  }
+});
+
+app.get("/test-posts", async (req, res) => {
+  try {
+    const Post = require('./models/post');
+    const posts = await Post.find().select('id title').limit(5);
+    res.json({ success: true, posts: posts });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 app.use(express.json());
 
 initRoute(app);
