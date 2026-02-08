@@ -1,8 +1,11 @@
+
 import React from "react";
 import { Link } from "react-router-dom";
 import "./card.css";
 
 const ProductCard = (props) => {
+  const productId = props.product?.id ?? props.product?._id;
+
   const handleCardClick = (e) => {
     // Save scroll position when clicking on artwork
     const scrollPosition = window.scrollY || document.documentElement.scrollTop;
@@ -32,7 +35,7 @@ const ProductCard = (props) => {
       <div className="nft__content">
         <h5 className="nft__title">
           <Link 
-            to={`/aProduct/${props.product._id}`}
+            to={`/aProduct/${productId}`}
             onClick={handleCardClick}
           >
             {props.product.title}
@@ -55,7 +58,7 @@ const ProductCard = (props) => {
 
         <div className="mt-3 d-flex align-items-center justify-content-between gap-2">
           <Link 
-            to={`/aProduct/${props.product._id}`}
+            to={`/aProduct/${productId}`}
             className="bid__btn d-flex align-items-center gap-1"
             style={{ textDecoration: 'none', color: 'inherit' }}
             onClick={handleCardClick}

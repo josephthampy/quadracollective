@@ -141,21 +141,21 @@ function Admin() {
 
             {products && products.length > 0 ? (
               products.map((product) => (
-                <Col lg="3" md="4" sm="6" className="mb-4" key={product._id}>
+                <Col lg="3" md="4" sm="6" className="mb-4" key={product.id ?? product._id}>
                   <div className="position-relative">
                     <ProductCard product={product} />
                     <div className="mt-2 d-flex gap-2">
                       <Button
                         color="warning"
                         size="sm"
-                        onClick={() => navigate(`/updatePost/${product._id}`)}
+                        onClick={() => navigate(`/updatePost/${product.id ?? product._id}`)}
                       >
                         <i className="ri-edit-line"></i> Edit
                       </Button>
                       <Button
                         color="danger"
                         size="sm"
-                        onClick={() => handleDelete(product._id)}
+                        onClick={() => handleDelete(product.id ?? product._id)}
                       >
                         <i className="ri-delete-bin-line"></i> Delete
                       </Button>
