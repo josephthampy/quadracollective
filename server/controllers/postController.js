@@ -328,7 +328,7 @@ module.exports.updatePost = async (req, res) => {
     
     const { Pool } = require('pg');
     const pool = new Pool({
-      connectionString: process.env.DATABASE_URL,
+      connectionString: process.env.DATABASE_URL || process.env.MONGO_URI,
     });
     
     const postId = parsedId;
@@ -402,7 +402,7 @@ module.exports.getAPost = async (req, res) => {
     
     const { Pool } = require('pg');
     const pool = new Pool({
-      connectionString: process.env.DATABASE_URL,
+      connectionString: process.env.DATABASE_URL || process.env.MONGO_URI,
     });
 
     const query = 'SELECT id, title, description, price, post, images, count, created_at as "createdAt" FROM posts WHERE id = $1';
