@@ -86,24 +86,15 @@ const Post = () => {
 
     setPosts({ ...posts, post: combined });
 
-    // Pre-fill the array to maintain indices
-    setPreviewImages(prev => {
-      const next = [...prev];
-      for (let i = 0; i < combined.length; i++) {
-        if (!next[i]) next[i] = null;
-      }
-      return next;
-    });
+    // Clear and regenerate previews to avoid race conditions and index mismatches
+    setPreviewImages(new Array(combined.length).fill(null));
 
-    newFiles.forEach((file) => {
+    combined.forEach((file, index) => {
       const reader = new FileReader();
       reader.onload = (evt) => {
         setPreviewImages((prev) => {
           const updated = [...prev];
-          const fileIndex = combined.indexOf(file);
-          if (fileIndex !== -1) {
-            updated[fileIndex] = evt.target.result;
-          }
+          updated[index] = evt.target.result;
           return updated;
         });
       };

@@ -10,13 +10,13 @@
 .preview-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 15px;
-  padding: 15px;
+  gap: 20px;
+  padding: 20px;
   background: rgba(255, 255, 255, 0.5);
-  border-radius: 8px;
-  margin-top: 10px;
+  border-radius: 12px;
+  margin-top: 15px;
   width: 100%;
-  min-height: 110px;
+  min-height: 120px;
 }
 
 .preview-item {
@@ -24,24 +24,26 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
-  width: 80px;
+  gap: 8px;
+  width: 90px;
 }
 
 .preview-img {
-  width: 80px;
-  height: 80px;
+  width: 90px;
+  height: 90px;
   object-fit: cover;
   cursor: pointer;
-  border-radius: 6px;
-  transition: all 0.3s ease;
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 2px solid transparent;
-  background: #eee;
+  background: #fff;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
 .preview-img.active {
   border-color: #8b0000;
   transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(139, 0, 0, 0.3);
 }
 
 .preview-img:hover {
@@ -50,26 +52,29 @@
 
 .remove-btn {
   position: absolute !important;
-  top: -10px !important;
-  right: -10px !important;
+  top: -12px !important;
+  right: -12px !important;
   border-radius: 50% !important;
-  width: 24px !important;
-  height: 24px !important;
+  width: 28px !important;
+  height: 28px !important;
   padding: 0 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  font-size: 16px !important;
-  z-index: 100 !important;
-  background-color: #dc3545 !important;
-  border: 2px solid white !important;
-  color: white !important;
+  font-size: 18px !important;
+  z-index: 1000 !important;
+  background-color: #ff4444 !important;
+  border: 2px solid #ffffff !important;
+  color: #ffffff !important;
   cursor: pointer !important;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3) !important;
+  transition: all 0.2s ease !important;
+  line-height: 1 !important;
 }
 
 .remove-btn:hover {
-  background-color: #bd2130 !important;
+  background-color: #cc0000 !important;
+  transform: scale(1.1) !important;
 }
 
 .form__input input, 
@@ -77,14 +82,22 @@
   background: transparent;
   border: 1px solid rgba(139, 0, 0, 0.2);
   color: #5d4037;
-  padding: 8px 15px;
-  border-radius: 5px;
+  padding: 10px 15px;
+  border-radius: 8px;
   width: 100%;
+  transition: border-color 0.2s;
+}
+
+.form__input input:focus, 
+.form__input textarea:focus {
+  border-color: #8b0000;
+  outline: none;
 }
 
 .form__input label {
   color: #8b0000;
-  font-weight: 500;
-  margin-bottom: 8px;
+  font-weight: 600;
+  margin-bottom: 10px;
   display: block;
+  font-size: 0.95rem;
 }
