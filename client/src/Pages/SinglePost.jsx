@@ -79,6 +79,14 @@ function SinglePost() {
     displayImages = [mainImageUrl, ...allImages.filter(img => img !== mainImageUrl)];
   }
 
+  const prevImage = () => {
+    setSelectedImageIndex((prev) => (prev === 0 ? displayImages.length - 1 : prev - 1));
+  };
+
+  const nextImage = () => {
+    setSelectedImageIndex((prev) => (prev === displayImages.length - 1 ? 0 : prev + 1));
+  };
+
   return (
     <>
       {/* Logo Section - Now at the very top */}
@@ -109,31 +117,32 @@ function SinglePost() {
           <Row>
             <Col lg="6" md="6" sm="6">
               {displayImages.length > 0 && (
-                <div>
-                  <img
-                    src={displayImages[selectedImageIndex]}
-                    alt={product.title || "Artwork image"}
-                    className="w-100 single__nft-img mb-3"
-                  />
+                <div className="single__nft-img-container">
+                  <div className="main__img-wrapper position-relative">
+                    <img
+                      src={displayImages[selectedImageIndex]}
+                      alt={product.title || "Artwork image"}
+                      className="w-100 single__nft-img mb-3"
+                    />
+                    {displayImages.length > 1 && (
+                      <>
+                        <button className="nav__btn prev__btn" onClick={prevImage}>
+                          <i className="ri-arrow-left-s-line"></i>
+                        </button>
+                        <button className="nav__btn next__btn" onClick={nextImage}>
+                          <i className="ri-arrow-right-s-line"></i>
+                        </button>
+                      </>
+                    )}
+                  </div>
                   {displayImages.length > 1 && (
-                    <div className="d-flex flex-wrap gap-2">
+                    <div className="d-flex flex-wrap gap-2 justify-content-center">
                       {displayImages.map((img, index) => (
                         <img
                           key={index}
                           src={img}
                           alt={`${product.title || "Artwork"} ${index + 1}`}
-                          className="single__nft-img-thumb"
-                          style={{
-                            width: "80px",
-                            height: "80px",
-                            objectFit: "cover",
-                            cursor: "pointer",
-                            border:
-                              index === selectedImageIndex
-                                ? "2px solid #8b0000"
-                                : "1px solid #ccc",
-                            borderRadius: "6px",
-                          }}
+                          className={`single__nft-img-thumb ${index === selectedImageIndex ? 'active' : ''}`}
                           onClick={() => setSelectedImageIndex(index)}
                         />
                       ))}

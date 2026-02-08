@@ -2,6 +2,70 @@
   border-radius: 8px;
 }
 
+.single__nft-img-container {
+  position: relative;
+  z-index: 10;
+}
+
+.main__img-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.nav__btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(139, 0, 0, 0.7);
+  color: #f5e6d3;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 20;
+  transition: all 0.3s ease;
+}
+
+.nav__btn:hover {
+  background: rgba(139, 0, 0, 0.9);
+  scale: 1.1;
+}
+
+.prev__btn {
+  left: 10px;
+}
+
+.next__btn {
+  right: 10px;
+}
+
+.single__nft-img-thumb {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  opacity: 0.6;
+}
+
+.single__nft-img-thumb.active {
+  border: 2px solid #8b0000;
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.single__nft-img-thumb:hover {
+  opacity: 1;
+}
+
 h5 {
   color: #8b0000;
   font-weight: 600;

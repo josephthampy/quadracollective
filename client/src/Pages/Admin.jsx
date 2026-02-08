@@ -116,13 +116,13 @@ function Admin() {
   return (
     <>
       <CommonSection title="Admin Panel" />
-      <section style={{ position: 'relative', zIndex: 1, backgroundColor: 'rgba(245, 230, 211, 0.85)', backdropFilter: 'blur(10px)', border: '1px solid rgba(139, 0, 0, 0.1)', minHeight: '70vh' }}>
-        <Container>
-          <Row>
-            <Col lg="12" className="mb-4">
+      <section className="admin-panel-section" style={{ position: 'relative', zIndex: 1, backgroundColor: 'rgba(245, 230, 211, 0.85)', backdropFilter: 'blur(10px)', border: '1px solid rgba(139, 0, 0, 0.1)', minHeight: '70vh' }}>
+        <Container className="admin-panel-container">
+          <Row className="admin-header">
+            <Col lg="12">
               <div className="d-flex justify-content-between align-items-center">
                 <h3>Manage Artwork</h3>
-                <div className="d-flex gap-2">
+                <div className="admin-controls">
                   <Button
                     color="primary"
                     onClick={() => navigate("/post")}
@@ -138,6 +138,9 @@ function Admin() {
                 </div>
               </div>
             </Col>
+          </Row>
+
+          <Row className="admin-products-grid">
 
             {products && products.length > 0 ? (
               products.map((product) => (
