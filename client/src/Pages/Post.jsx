@@ -86,15 +86,17 @@ const Post = () => {
 
     setPosts({ ...posts, post: combined });
 
-    // Clear and regenerate previews to avoid race conditions and index mismatches
-    setPreviewImages(new Array(combined.length).fill(null));
+    // Force synchronous preview state update
+    const currentPreviews = [...previewImages];
+    const startIndex = existingFiles.length;
 
-    combined.forEach((file, index) => {
+    newFiles.forEach((file, i) => {
       const reader = new FileReader();
+      const targetIndex = startIndex + i;
       reader.onload = (evt) => {
         setPreviewImages((prev) => {
           const updated = [...prev];
-          updated[index] = evt.target.result;
+          updated[targetIndex] = evt.target.result;
           return updated;
         });
       };
