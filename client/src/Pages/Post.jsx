@@ -57,7 +57,7 @@ const Post = () => {
     description: "",
     price: "",
     count: "",
-    post: null,
+    post: [],
   });
   const [adminPassword, setAdminPassword] = useState("");
 
@@ -72,49 +72,63 @@ const Post = () => {
   }, [navigate]);
 
   const handlePic = (e) => {
-    e.preventDefault();
     const newFiles = Array.from(e.target.files || []);
     if (!newFiles.length) return;
 
-    const existingFiles = Array.isArray(posts.post) ? posts.post : (posts.post ? [posts.post] : []);
-    const combined = [...existingFiles, ...newFiles];
+    const existingFiles = Array.isArray(posts.post) ? posts.post : [];
+    const combinedFiles = [...existingFiles, ...newFiles].slice(0, 10);
 
-    if (combined.length > 10) {
-      toast.error("You can upload at most 10 images");
-      return;
-    }
+    setPosts({ ...posts, post: combinedFiles });
 
-    setPosts({ ...posts, post: combined });
+    const loadPreviews = async () => {
+      const newPreviews = await Promise.all(
+        combinedFiles.map((file) => {
+          return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (evt) => resolve(evt.target.result);
+            reader.readAsDataURL(file);
+          });
+        })
+      );
+      setPreviewImages(newPreviews);
+    };
 
-    // Using a more reliable way to update previews without losing indices
-    newFiles.forEach((file, i) => {
-      const reader = new FileReader();
-      const targetIndex = startIndex + i;
-      reader.onload = (evt) => {
-        setPreviewImages((prev) => {
-          const next = [...prev];
-          // Ensure the array is long enough
-          while (next.length <= targetIndex) {
-            next.push(null);
-          }
-          next[targetIndex] = evt.target.result;
-          return next;
-        });
-      };
-      reader.readAsDataURL(file);
-    });
+    loadPreviews();
   };
 
-  const moveImage = (fromIndex, toIndex) => {
-    if (fromIndex < 0 || toIndex < 0 || toIndex >= previewImages.length) return;
+  const removeImage = (e, index) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const newFiles = [...posts.post];
+    newFiles.splice(index, 1);
 
     const newPreviews = [...previewImages];
-    const [movedPreview] = newPreviews.splice(fromIndex, 1);
-    newPreviews.splice(toIndex, 0, movedPreview);
+    newPreviews.splice(index, 1);
+
+    let newMainIndex = mainIndex;
+    if (index === mainIndex) {
+      newMainIndex = 0;
+    } else if (index < mainIndex) {
+      newMainIndex = mainIndex - 1;
+    }
+
+    setPreviewImages(newPreviews);
+    setMainIndex(newMainIndex);
+    setPosts({ ...posts, post: newFiles });
+  };
+
+  const moveImage = (e, fromIndex, toIndex) => {
+    e.preventDefault();
+    if (fromIndex < 0 || toIndex < 0 || toIndex >= previewImages.length) return;
 
     const newFiles = [...posts.post];
     const [movedFile] = newFiles.splice(fromIndex, 1);
     newFiles.splice(toIndex, 0, movedFile);
+
+    const newPreviews = [...previewImages];
+    const [movedPreview] = newPreviews.splice(fromIndex, 1);
+    newPreviews.splice(toIndex, 0, movedPreview);
 
     let newMainIndex = mainIndex;
     if (fromIndex === mainIndex) newMainIndex = toIndex;
@@ -126,25 +140,9 @@ const Post = () => {
     setPosts({ ...posts, post: newFiles });
   };
 
-  const removeImage = (index) => {
-    const newFiles = [...posts.post];
-    newFiles.splice(index, 1);
-
-    const newPreviews = [...previewImages];
-    newPreviews.splice(index, 1);
-
-    let newMainIndex = mainIndex;
-    if (index === mainIndex) newMainIndex = 0;
-    else if (index < mainIndex) newMainIndex = mainIndex - 1;
-
-    setPreviewImages(newPreviews);
-    setMainIndex(newMainIndex);
-    setPosts({ ...posts, post: newFiles });
-  };
-
   const handleAdd = async (e) => {
     e.preventDefault();
-    if (!posts.title || !posts.description || !posts.price || !posts.post?.length) {
+    if (!posts.title || !posts.description || !posts.price || !posts.post.length) {
       toast.error("Please fill all required fields and upload images");
       return;
     }
@@ -176,7 +174,7 @@ const Post = () => {
                   {previewImages.length === 0 ? (
                     <PseudoProfile>P</PseudoProfile>
                   ) : (
-                    <ProfileImage src={previewImages[mainIndex]} alt="" />
+                    <ProfileImage src={previewImages[mainIndex] || ""} alt="" />
                   )}
                   <input
                     ref={fileRef}
@@ -186,7 +184,7 @@ const Post = () => {
                     multiple
                     onChange={handlePic}
                   />
-                  <button className="bid__btn d-flex align-items-center gap-2" onClick={() => fileRef.current.click()}>
+                  <button type="button" className="bid__btn d-flex align-items-center gap-2" onClick={() => fileRef.current.click()}>
                     <i className="ri-upload-line"></i> Upload
                   </button>
                 </Profile>
@@ -198,8 +196,8 @@ const Post = () => {
                 <form onSubmit={handleAdd}>
                   {previewImages.length > 0 && (
                     <div className="form__input">
-                      <label>Reorder & select main image</label>
-                      <div className="preview-grid" style={{
+                      <label style={{ color: "#8b0000", fontWeight: "600", marginBottom: "10px", display: "block" }}>Reorder & select main image</label>
+                      <div style={{
                         display: "flex",
                         flexWrap: "wrap",
                         gap: "20px",
@@ -211,71 +209,60 @@ const Post = () => {
                         minHeight: "120px"
                       }}>
                         {previewImages.map((img, index) => (
-                          img && (
-                            <div key={index} className="preview-item" style={{
-                              position: "relative",
-                              display: "flex",
-                              flexDirection: "column",
-                              alignItems: "center",
-                              gap: "8px",
-                              width: "90px"
-                            }}>
-                              <button
-                                type="button"
-                                className="remove-btn"
-                                style={{
-                                  position: "absolute",
-                                  top: "-12px",
-                                  right: "-12px",
-                                  borderRadius: "50%",
-                                  width: "28px",
-                                  height: "28px",
-                                  padding: "0",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  fontSize: "18px",
-                                  zIndex: "9999",
-                                  backgroundColor: "#ff4444",
-                                  border: "2px solid #ffffff",
-                                  color: "#ffffff",
-                                  cursor: "pointer",
-                                  boxShadow: "0 4px 8px rgba(0,0,0,0.3)",
-                                  lineHeight: "1",
-                                  visibility: "visible",
-                                  opacity: "1"
-                                }}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  removeImage(index);
-                                }}
-                              >
-                                &times;
-                              </button>
-                              <img
-                                src={img}
-                                alt=""
-                                className={`preview-img ${index === mainIndex ? "active" : ""}`}
-                                style={{
-                                  width: "90px",
-                                  height: "90px",
-                                  objectFit: "cover",
-                                  cursor: "pointer",
-                                  borderRadius: "8px",
-                                  transition: "all 0.3s ease",
-                                  border: index === mainIndex ? "3px solid #8b0000" : "2px solid transparent",
-                                  background: "#fff",
-                                  boxShadow: "0 4px 6px rgba(0,0,0,0.1)"
-                                }}
-                                onClick={() => setMainIndex(index)}
-                              />
-                              <div className="d-flex gap-1">
-                                <button type="button" className="btn btn-sm btn-outline-light" disabled={index === 0} onClick={() => moveImage(index, index - 1)}>{"\u2190"}</button>
-                                <button type="button" className="btn btn-sm btn-outline-light" disabled={index === previewImages.length - 1} onClick={() => moveImage(index, index + 1)}>{"\u2192"}</button>
-                              </div>
+                          <div key={index} style={{
+                            position: "relative",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            gap: "8px",
+                            width: "90px"
+                          }}>
+                            <div 
+                              onClick={(e) => removeImage(e, index)}
+                              style={{
+                                position: "absolute",
+                                top: "-10px",
+                                right: "-10px",
+                                width: "26px",
+                                height: "26px",
+                                backgroundColor: "#ff0000",
+                                color: "#ffffff",
+                                borderRadius: "50%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                fontSize: "18px",
+                                fontWeight: "bold",
+                                cursor: "pointer",
+                                zIndex: "9999",
+                                border: "2px solid #ffffff",
+                                boxShadow: "0 2px 4px rgba(0,0,0,0.3)"
+                              }}
+                            >
+                              ×
                             </div>
-                          )
+                            
+                            <img
+                              src={img}
+                              alt=""
+                              onClick={() => setMainIndex(index)}
+                              style={{
+                                width: "90px",
+                                height: "90px",
+                                objectFit: "cover",
+                                cursor: "pointer",
+                                borderRadius: "8px",
+                                border: index === mainIndex ? "3px solid #8b0000" : "2px solid transparent",
+                                boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+                                background: "#fff"
+                              }}
+                            />
+                            
+                            <div className="d-flex gap-1">
+                              <button type="button" className="btn btn-sm btn-outline-light" style={{ padding: "0 6px", color: "#8b0000", borderColor: "#8b0000" }} disabled={index === 0} onClick={(e) => moveImage(e, index, index - 1)}>{"\u2190"}</button>
+                              <button type="button" className="btn btn-sm btn-outline-light" style={{ padding: "0 6px", color: "#8b0000", borderColor: "#8b0000" }} disabled={index === previewImages.length - 1} onClick={(e) => moveImage(e, index, index + 1)}>{"\u2192"}</button>
+                            </div>
+                          </div>
                         ))}
                       </div>
                     </div>
