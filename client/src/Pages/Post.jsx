@@ -213,84 +213,30 @@ const Post = () => {
                   {previewImages.length > 0 && (
                     <div className="form__input">
                       <label style={{ color: "#8b0000", fontWeight: "600", marginBottom: "10px", display: "block" }}>Reorder & select main image</label>
-                      <div style={{
-                        display: "flex",
-                        flexWrap: "nowrap",
-                        gap: "20px",
-                        padding: "20px",
-                        background: "rgba(255, 255, 255, 0.5)",
-                        borderRadius: "12px",
-                        marginTop: "15px",
-                        width: "100%",
-                        minHeight: "120px",
-                        overflowX: "auto",
-                        overflowY: "hidden",
-                        WebkitOverflowScrolling: "touch",
-                        marginBottom: "16px"
-                      }}>
+                      <div className="preview-grid">
                         {previewImages.map((img, index) => (
-                          <div key={index} style={{
-                            position: "relative",
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            gap: "8px",
-                            width: "90px",
-                            flex: "0 0 auto"
-                          }}>
-                            <div 
+                          <div key={index} className="preview-item">
+                            <button
+                              type="button"
+                              className="remove-btn"
                               onClick={(e) => removeImage(e, index)}
-                              style={{
-                                position: "absolute",
-                                top: "-10px",
-                                right: "-10px",
-                                width: "26px",
-                                height: "26px",
-                                backgroundColor: "#ff0000",
-                                color: "#ffffff",
-                                borderRadius: "50%",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                fontSize: "18px",
-                                fontWeight: "bold",
-                                cursor: "pointer",
-                                zIndex: "9999",
-                                border: "2px solid #ffffff",
-                                boxShadow: "0 2px 4px rgba(0,0,0,0.3)"
-                              }}
                             >
                               ×
-                            </div>
+                            </button>
                             
                             {img ? (
                               <img
                                 src={img}
                                 alt=""
                                 onClick={() => setMainIndex(index)}
-                                style={{
-                                  width: "90px",
-                                  height: "90px",
-                                  objectFit: "cover",
-                                  cursor: "pointer",
-                                  borderRadius: "8px",
-                                  border: index === mainIndex ? "3px solid #8b0000" : "2px solid transparent",
-                                  boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-                                  background: "#fff"
-                                }}
+                                className={`preview-img ${index === mainIndex ? "active" : ""}`}
+                                style={{ borderWidth: index === mainIndex ? "3px" : "2px" }}
                               />
                             ) : (
                               <div
                                 onClick={() => setMainIndex(index)}
-                                style={{
-                                  width: "90px",
-                                  height: "90px",
-                                  cursor: "pointer",
-                                  borderRadius: "8px",
-                                  border: index === mainIndex ? "3px solid #8b0000" : "2px solid transparent",
-                                  boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-                                  background: "rgba(0, 0, 0, 0.1)"
-                                }}
+                                className={`preview-img ${index === mainIndex ? "active" : ""}`}
+                                style={{ background: "rgba(0, 0, 0, 0.1)", borderWidth: index === mainIndex ? "3px" : "2px" }}
                               />
                             )}
                             
