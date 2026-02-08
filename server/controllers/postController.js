@@ -242,21 +242,19 @@ module.exports.deletePost = async (req, res) => {
     
     console.log('deletePost called with id:', id, 'type:', typeof id);
     
-    // Parse ID as integer if possible
-    let postId = id;
-    if (!isNaN(id)) {
-      postId = parseInt(id);
+    const parsedId = parseInt(id, 10);
+    if (Number.isNaN(parsedId)) {
+      response.message = "Invalid post id";
+      return res.status(400).send(response);
     }
     
-    // First get the post to find image URLs
-    console.log('deletePost: Looking for post with id:', postId);
-    const postResult = await pool.query('SELECT * FROM posts WHERE id = $1', [postId]);
+    console.log('deletePost: Looking for post with id:', parsedId);
+    const postResult = await pool.query('SELECT * FROM posts WHERE id = $1', [parsedId]);
     
     console.log('deletePost: Found', postResult.rows.length, 'posts');
     if (postResult.rows.length > 0) {
       const post = postResult.rows[0];
       
-      // Collect all image URLs
       const imageUrls = [];
       if (Array.isArray(post.images) && post.images.length) {
         imageUrls.push(...post.images);
@@ -265,7 +263,6 @@ module.exports.deletePost = async (req, res) => {
         imageUrls.push(post.post);
       }
 
-      // Delete each image file if it exists on disk
       imageUrls.forEach((url) => {
         try {
           const imageName = url.split("/");
@@ -280,16 +277,15 @@ module.exports.deletePost = async (req, res) => {
         }
       });
 
-      // Delete the post from database
-      await pool.query('DELETE FROM posts WHERE id = $1', [postId]);
+      await pool.query('DELETE FROM posts WHERE id = $1', [parsedId]);
       
       response.success = true;
       response.message = "Post deleted successfully";
       return res.status(200).send(response);
-    } else {
-      response.message = "Post not found";
-      return res.status(404).send(response);
     }
+    
+    response.message = "Post not found";
+    return res.status(404).send(response);
   } catch (err) {
     console.log("Error", err);
     response.message = "Something went wrong!";
@@ -306,6 +302,18 @@ module.exports.updatePost = async (req, res) => {
   };
   try {
     const { id, title, description, price, oldPost, count } = req.body;
+ 
+    if (id === undefined || id === null || id === "") {
+      response.message = "Post id is required";
+      return res.status(400).send(response);
+    }
+
+    const parsedId = parseInt(id, 10);
+    if (Number.isNaN(parsedId)) {
+      response.message = "Invalid post id";
+      return res.status(400).send(response);
+    }
+
     let post;
     if (req.file) {
       const temp = req.file.filename.split(".");
@@ -320,14 +328,10 @@ module.exports.updatePost = async (req, res) => {
     
     const { Pool } = require('pg');
     const pool = new Pool({
-      connectionString: process.env.DATABASE_URL || process.env.MONGO_URI,
+      connectionString: process.env.DATABASE_URL,
     });
     
-    // Parse ID as integer if possible
-    let postId = id;
-    if (!isNaN(id)) {
-      postId = parseInt(id);
-    }
+    const postId = parsedId;
     
     // Update the post
     const updateQuery = `
@@ -381,7 +385,7 @@ module.exports.updatePost = async (req, res) => {
 
 module.exports.getAPost = async (req, res) => {
   let response = {
-    success: true,
+    success: false,
     message: "",
     errMessage: "",
     result: "",
@@ -389,36 +393,21 @@ module.exports.getAPost = async (req, res) => {
   try {
     const { id } = req.params;
     console.log('getAPost called with id:', id, 'type:', typeof id);
+
+    const parsedId = parseInt(id, 10);
+    if (Number.isNaN(parsedId)) {
+      response.message = "Invalid post id";
+      return res.status(400).send(response);
+    }
     
     const { Pool } = require('pg');
     const pool = new Pool({
-      connectionString: process.env.DATABASE_URL || process.env.MONGO_URI,
+      connectionString: process.env.DATABASE_URL,
     });
-    
-    // Handle different ID formats
-    let postId = id;
-    let query = 'SELECT id, title, description, price, post, images, count, created_at as "createdAt" FROM posts WHERE id = $1';
-    
-    // If it's a number, use it directly
-    if (!isNaN(id)) {
-      postId = parseInt(id);
-    }
-    // If it's a MongoDB-like string, we need to find by other means
-    else if (typeof id === 'string' && id.length > 10) {
-      // This looks like a MongoDB ObjectId, try to find by title or other field
-      // For now, let's try to find the most recent post as a fallback
-      query = 'SELECT id, title, description, price, post, images, count, created_at as "createdAt" FROM posts ORDER BY created_at DESC LIMIT 1';
-      postId = null; // Don't use WHERE clause
-    }
-    
-    console.log('Using postId:', postId, 'query:', query);
-    
-    let result;
-    if (postId !== null) {
-      result = await pool.query(query, [postId]);
-    } else {
-      result = await pool.query(query);
-    }
+
+    const query = 'SELECT id, title, description, price, post, images, count, created_at as "createdAt" FROM posts WHERE id = $1';
+    console.log('Using parsedId:', parsedId, 'query:', query);
+    const result = await pool.query(query, [parsedId]);
     
     console.log('getAPost query result:', result.rows.length, 'rows found');
     if (result.rows.length > 0) {
@@ -427,7 +416,7 @@ module.exports.getAPost = async (req, res) => {
       response.result = result.rows[0];
       return res.status(200).send(response);
     } else {
-      console.log('getAPost: Post not found for id:', postId);
+      console.log('getAPost: Post not found for id:', parsedId);
       response.message = "Post not found";
       return res.status(404).send(response);
     }

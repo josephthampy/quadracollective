@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { updatePost, getAPost } from "../Services/Art";
@@ -73,9 +74,15 @@ const UpdatePost = () => {
     }
     setAdminPassword(storedPassword);
 
-    try {
-      getAPost(id).then((data) => {
-        const result = data.data.result;
+    const load = async () => {
+      try {
+        const data = await getAPost(id);
+        const result = data?.data?.result;
+        if (!result) {
+          toast.error("Artwork not found");
+          navigate("/", { replace: true });
+          return;
+        }
         setUpdate({
           id: id,
           title: result.title || "",
@@ -85,19 +92,28 @@ const UpdatePost = () => {
           count: result.count || 1,
         });
         setImages(result.post);
-      });
-    } catch (err) {
-      console.log(err);
-      toast.error("Failed to load artwork");
-    }
+      } catch (err) {
+        const msg = err?.response?.data?.message || "Failed to load artwork";
+        toast.error(msg);
+        console.log(err);
+        if (msg.toLowerCase().includes("unauthorized") || msg.toLowerCase().includes("password")) {
+          localStorage.removeItem("adminPassword");
+          navigate("/admin/login", { replace: true });
+          return;
+        }
+        navigate("/", { replace: true });
+      }
+    };
+
+    load();
   }, [id, navigate]);
 
   const handlePic = (e) => {
     const fileReader = new FileReader();
     e.preventDefault();
     var pic = e.target.files[0];
-    fileReader.onload = function (e) {
-      setImages(e.target.result);
+    fileReader.onload = function (e2) {
+      setImages(e2.target.result);
       setUpdate({ ...update, pic: pic });
     };
     fileReader.readAsDataURL(pic);
@@ -120,7 +136,10 @@ const UpdatePost = () => {
         navigate("/");
       } else {
         toast.error(response.data.message || "Failed to update");
-        if (response.data.message?.includes("password") || response.data.message?.includes("Unauthorized")) {
+        if (
+          response.data.message?.includes("password") ||
+          response.data.message?.includes("Unauthorized")
+        ) {
           localStorage.removeItem("adminPassword");
           navigate("/admin/login");
         }
@@ -135,6 +154,7 @@ const UpdatePost = () => {
       console.log(err);
     }
   };
+
   return (
     <>
       <CommonSection title="Update Artwork" />
@@ -179,11 +199,6 @@ const UpdatePost = () => {
             <Col lg="9" md="8" sm="6">
               <div className="create__item">
                 <form>
-                  {/* <div className="form__input">
-                    <label htmlFor="">Upload File</label>
-                    <input type="file" className="upload__input" />
-                  </div> */}
-
                   <div className="form__input">
                     <label htmlFor="">Name</label>
                     <input

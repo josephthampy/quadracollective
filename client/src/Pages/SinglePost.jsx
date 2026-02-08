@@ -22,17 +22,22 @@ function SinglePost() {
     // Always start this page scrolled to the top
     window.scrollTo({ top: 0, behavior: "smooth" });
 
-    try {
-      getAPost(id).then((data) => {
-        const productData = data.data.result || {};
+    const load = async () => {
+      try {
+        const data = await getAPost(id);
+        const productData = data?.data?.result || {};
         setProduct(productData);
         // The main image should always be the first one in the images array
         setSelectedImageIndex(0);
-      });
-    } catch (err) {
-      console.log(err);
-      toast.error("Failed to load artwork");
-    }
+      } catch (err) {
+        const msg = err?.response?.data?.message || "Failed to load artwork";
+        toast.error(msg);
+        console.log(err);
+        navigate("/", { replace: true });
+      }
+    };
+
+    load();
   }, [id, location.state]);
 
   const handleBackToHome = () => {
