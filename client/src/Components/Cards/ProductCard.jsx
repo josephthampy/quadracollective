@@ -7,6 +7,20 @@ const ProductCard = (props) => {
   const productId = props.product?.id ?? props.product?._id;
   const detailsPath = productId ? `/aProduct/${productId}` : "/";
 
+  const placeholderImg =
+    "data:image/svg+xml;charset=UTF-8," +
+    encodeURIComponent(
+      `<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600'>
+        <rect width='100%' height='100%' fill='#f5e6d3'/>
+        <text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='#8b0000' font-family='Arial' font-size='24'>No Image</text>
+      </svg>`
+    );
+
+  const imgSrc =
+    props.product?.post ||
+    (Array.isArray(props.product?.images) ? props.product.images[0] : null) ||
+    placeholderImg;
+
   const handleCardClick = (e) => {
     // Save scroll position when clicking on artwork
     const scrollPosition = window.scrollY || document.documentElement.scrollTop;
@@ -30,7 +44,15 @@ const ProductCard = (props) => {
       <div className="product-card-bg-shape product-card-bg-shape-6"></div>
       
       <div className="nft__img">
-        <img src={props.product.post} alt={props.product.title} className="w-100" />
+        <img
+          src={imgSrc}
+          alt={props.product?.title || "Artwork"}
+          className="w-100"
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = placeholderImg;
+          }}
+        />
       </div>
 
       <div className="nft__content">
@@ -47,7 +69,7 @@ const ProductCard = (props) => {
           <div className="creator__info w-100 d-flex align-items-center justify-content-between">
             <div>
               <h6>Description</h6>
-              <p>{props.product.description.substring(0, 50)}...</p>
+              <p>{(props.product?.description || "").substring(0, 50)}...</p>
             </div>
 
             <div>
