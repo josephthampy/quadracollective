@@ -87,20 +87,20 @@ const Post = () => {
 
     setPosts({ ...posts, post: combinedFiles });
 
-    const loadPreviews = async () => {
-      const newPreviews = await Promise.all(
-        combinedFiles.map((file) => {
-          return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = (evt) => resolve(evt.target.result);
-            reader.readAsDataURL(file);
-          });
-        })
-      );
-      setPreviewImages(newPreviews);
-    };
+    setPreviewImages(new Array(combinedFiles.length).fill(null));
 
-    loadPreviews();
+    combinedFiles.forEach((file, index) => {
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        const result = evt?.target?.result || null;
+        setPreviewImages((prev) => {
+          const next = Array.isArray(prev) ? [...prev] : new Array(combinedFiles.length).fill(null);
+          next[index] = result;
+          return next;
+        });
+      };
+      reader.readAsDataURL(file);
+    });
   };
 
   const removeImage = (e, index) => {
@@ -181,7 +181,7 @@ const Post = () => {
                   {previewImages.length === 0 ? (
                     <PseudoProfile>P</PseudoProfile>
                   ) : (
-                    <ProfileImage src={previewImages[mainIndex] || ""} alt="" />
+                    <ProfileImage src={previewImages[mainIndex] || previewImages.find(Boolean) || ""} alt="" />
                   )}
                   <input
                     ref={fileRef}
@@ -263,21 +263,36 @@ const Post = () => {
                               ×
                             </div>
                             
-                            <img
-                              src={img}
-                              alt=""
-                              onClick={() => setMainIndex(index)}
-                              style={{
-                                width: "90px",
-                                height: "90px",
-                                objectFit: "cover",
-                                cursor: "pointer",
-                                borderRadius: "8px",
-                                border: index === mainIndex ? "3px solid #8b0000" : "2px solid transparent",
-                                boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-                                background: "#fff"
-                              }}
-                            />
+                            {img ? (
+                              <img
+                                src={img}
+                                alt=""
+                                onClick={() => setMainIndex(index)}
+                                style={{
+                                  width: "90px",
+                                  height: "90px",
+                                  objectFit: "cover",
+                                  cursor: "pointer",
+                                  borderRadius: "8px",
+                                  border: index === mainIndex ? "3px solid #8b0000" : "2px solid transparent",
+                                  boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+                                  background: "#fff"
+                                }}
+                              />
+                            ) : (
+                              <div
+                                onClick={() => setMainIndex(index)}
+                                style={{
+                                  width: "90px",
+                                  height: "90px",
+                                  cursor: "pointer",
+                                  borderRadius: "8px",
+                                  border: index === mainIndex ? "3px solid #8b0000" : "2px solid transparent",
+                                  boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+                                  background: "rgba(0, 0, 0, 0.1)"
+                                }}
+                              />
+                            )}
                             
                             <div className="d-flex gap-1">
                               <button type="button" className="btn btn-sm btn-outline-light" style={{ padding: "0 6px", color: "#8b0000", borderColor: "#8b0000" }} disabled={index === 0} onClick={(e) => moveImage(e, index, index - 1)}>{"\u2190"}</button>
