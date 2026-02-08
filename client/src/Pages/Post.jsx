@@ -57,12 +57,11 @@ const Post = () => {
     description: "",
     price: "",
     count: "",
-    post: null, // will hold an array of File objects for images
+    post: null,
   });
   const [adminPassword, setAdminPassword] = useState("");
 
   useEffect(() => {
-    // Check if admin is logged in
     const storedPassword = localStorage.getItem("adminPassword");
     if (!storedPassword) {
       toast.error("Unauthorized access. Admin login required.");
@@ -75,16 +74,9 @@ const Post = () => {
   const handlePic = (e) => {
     e.preventDefault();
     const newFiles = Array.from(e.target.files || []);
-
     if (!newFiles.length) return;
 
-    // Merge with already-selected files so user can add in multiple steps
-    const existingFiles = Array.isArray(posts.post)
-      ? posts.post
-      : posts.post
-      ? [posts.post]
-      : [];
-
+    const existingFiles = Array.isArray(posts.post) ? posts.post : (posts.post ? [posts.post] : []);
     const combined = [...existingFiles, ...newFiles];
 
     if (combined.length > 10) {
@@ -92,154 +84,84 @@ const Post = () => {
       return;
     }
 
-    // Save files for upload and preserve main index if already set
-    const currentMainIndex = posts.mainIndex !== undefined ? posts.mainIndex : mainIndex;
-    setPosts({ ...posts, post: combined, mainIndex: currentMainIndex });
-    setMainIndex(currentMainIndex);
+    setPosts({ ...posts, post: combined });
 
-    // Generate preview images in order
-    setPreviewImages([]);
-    combined.forEach((file, index) => {
-      const fileReader = new FileReader();
-      fileReader.onload = function (evt) {
+    const newPreviews = [...previewImages];
+    newFiles.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (evt) => {
         setPreviewImages((prev) => {
-          const newPreviews = [...prev];
-          newPreviews[index] = evt.target.result;
-          return newPreviews.filter(Boolean); // Remove undefined entries
+          const updated = [...prev];
+          const fileIndex = combined.indexOf(file);
+          updated[fileIndex] = evt.target.result;
+          return updated;
         });
       };
-      fileReader.readAsDataURL(file);
+      reader.readAsDataURL(file);
     });
   };
 
-  // Move image (and corresponding file) to new position
   const moveImage = (fromIndex, toIndex) => {
-    if (
-      fromIndex === toIndex ||
-      fromIndex < 0 ||
-      toIndex < 0 ||
-      !previewImages[fromIndex] ||
-      !previewImages[toIndex]
-    ) {
-      return;
-    }
+    if (fromIndex < 0 || toIndex < 0 || toIndex >= previewImages.length) return;
 
-    // Reorder preview images
     const newPreviews = [...previewImages];
     const [movedPreview] = newPreviews.splice(fromIndex, 1);
     newPreviews.splice(toIndex, 0, movedPreview);
 
-    // Reorder file list
-    const existingFiles = Array.isArray(posts.post)
-      ? posts.post
-      : posts.post
-      ? [posts.post]
-      : [];
-    const newFiles = [...existingFiles];
+    const newFiles = [...posts.post];
     const [movedFile] = newFiles.splice(fromIndex, 1);
     newFiles.splice(toIndex, 0, movedFile);
 
-    // Adjust main index if needed
     let newMainIndex = mainIndex;
-    if (fromIndex === mainIndex) {
-      newMainIndex = toIndex;
-    } else if (fromIndex < mainIndex && toIndex >= mainIndex) {
-      newMainIndex = mainIndex - 1;
-    } else if (fromIndex > mainIndex && toIndex <= mainIndex) {
-      newMainIndex = mainIndex + 1;
-    }
+    if (fromIndex === mainIndex) newMainIndex = toIndex;
+    else if (fromIndex < mainIndex && toIndex >= mainIndex) newMainIndex = mainIndex - 1;
+    else if (fromIndex > mainIndex && toIndex <= mainIndex) newMainIndex = mainIndex + 1;
 
     setPreviewImages(newPreviews);
     setMainIndex(newMainIndex);
-    setPosts((prev) => ({
-      ...prev,
-      post: newFiles,
-      mainIndex: newMainIndex,
-    }));
+    setPosts({ ...posts, post: newFiles });
   };
 
   const removeImage = (index) => {
-    const existingFiles = Array.isArray(posts.post) ? posts.post : [];
-    const newFiles = [...existingFiles];
+    const newFiles = [...posts.post];
     newFiles.splice(index, 1);
 
     const newPreviews = [...previewImages];
     newPreviews.splice(index, 1);
 
-    // Adjust mainIndex
     let newMainIndex = mainIndex;
-    if (index === mainIndex) {
-      newMainIndex = 0;
-    } else if (index < mainIndex) {
-      newMainIndex = mainIndex - 1;
-    }
+    if (index === mainIndex) newMainIndex = 0;
+    else if (index < mainIndex) newMainIndex = mainIndex - 1;
 
     setPreviewImages(newPreviews);
     setMainIndex(newMainIndex);
-    setPosts((prev) => ({
-      ...prev,
-      post: newFiles,
-      mainIndex: newMainIndex,
-    }));
+    setPosts({ ...posts, post: newFiles });
   };
 
   const handleAdd = async (e) => {
     e.preventDefault();
-    toast.info("Post button clicked - processing...");
-    
-    if (!adminPassword) {
-      toast.error("Admin authentication required");
-      navigate("/admin/login");
-      return;
-    }
-    
-    const imagesToUpload = Array.isArray(posts.post)
-      ? posts.post
-      : posts.post
-      ? [posts.post]
-      : [];
-
-    if (!imagesToUpload.length) {
-      toast.error("Please upload at least one image");
-      return;
-    }
-
-    if (imagesToUpload.length > 10) {
-      toast.error("You can upload at most 10 images");
+    if (!posts.title || !posts.description || !posts.price || !posts.post?.length) {
+      toast.error("Please fill all required fields and upload images");
       return;
     }
 
     try {
-      toast.info("Uploading art...");
-      const formData = {
-        ...posts,
-        mainIndex: mainIndex,
-      };
-      
+      const formData = { ...posts, mainIndex };
       const response = await postArt(formData, adminPassword);
-      if (response.data.success && response.data.message === "Posted successfully") {
-        toast.success(response.data.message);
-        navigate("/");
+      if (response.data.success) {
+        toast.success("Posted successfully");
+        navigate("/admin");
       } else {
-        toast.warn(response.data.message || "Failed to post");
+        toast.error(response.data.message);
       }
     } catch (err) {
-      const errorMessage = err.response?.data?.message || err.message || "Failed to post";
-      console.log("Error details:", err.response?.data || err);
-      if (errorMessage.includes("password") || errorMessage.includes("Unauthorized")) {
-        toast.error("Invalid admin password. Please login again.");
-        localStorage.removeItem("adminPassword");
-        navigate("/admin/login");
-      } else {
-        toast.error("Upload failed: " + errorMessage);
-      }
+      toast.error("Failed to post artwork");
     }
   };
 
   return (
     <>
       <CommonSection title="Create Item" />
-
       <section>
         <Container>
           <Row>
@@ -248,11 +170,7 @@ const Post = () => {
               <ProfilePic>
                 <Profile>
                   {previewImages.length === 0 ? (
-                    <PseudoProfile
-                      dangerouslySetInnerHTML={{
-                        __html: "P",
-                      }}
-                    />
+                    <PseudoProfile>P</PseudoProfile>
                   ) : (
                     <ProfileImage src={previewImages[mainIndex]} alt="" />
                   )}
@@ -260,18 +178,11 @@ const Post = () => {
                     ref={fileRef}
                     hidden
                     type="file"
-                    p="1.5"
                     accept="image/*"
-                    name="post"
                     multiple
                     onChange={handlePic}
                   />
-                  <button
-                    className="bid__btn d-flex align-items-center gap-5 pad"
-                    onClick={() => {
-                      fileRef.current.click();
-                    }}
-                  >
+                  <button className="bid__btn d-flex align-items-center gap-2" onClick={() => fileRef.current.click()}>
                     <i className="ri-upload-line"></i> Upload
                   </button>
                 </Profile>
@@ -280,142 +191,51 @@ const Post = () => {
 
             <Col lg="9" md="8" sm="6">
               <div className="create__item">
-                <form>
+                <form onSubmit={handleAdd}>
                   {previewImages.length > 0 && (
                     <div className="form__input">
-                      <label htmlFor="">Reorder & select main image</label>
-                      <div className="d-flex flex-wrap gap-3 align-items-center">
+                      <label>Reorder & select main image</label>
+                      <div className="preview-grid">
                         {previewImages.map((img, index) => (
-                          <div
-                            key={index}
-                            style={{
-                              display: "flex",
-                              flexDirection: "column",
-                              alignItems: "center",
-                              gap: "4px",
-                              position: "relative"
-                            }}
-                          >
-                            <button
-                              type="button"
-                              className="btn btn-sm btn-danger"
-                              style={{
-                                position: "absolute",
-                                top: "-8px",
-                                right: "-8px",
-                                borderRadius: "50%",
-                                width: "20px",
-                                height: "20px",
-                                padding: "0",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                fontSize: "12px",
-                                zIndex: 1
-                              }}
-                              onClick={() => removeImage(index)}
-                            >
-                              ×
-                            </button>
+                          <div key={index} className="preview-item">
+                            <button type="button" className="btn btn-sm btn-danger remove-btn" onClick={() => removeImage(index)}>×</button>
                             <img
                               src={img}
-                              alt={`preview-${index}`}
-                              style={{
-                                width: "70px",
-                                height: "70px",
-                                objectFit: "cover",
-                                cursor: "pointer",
-                                border:
-                                  index === mainIndex
-                                    ? "2px solid #8b0000"
-                                    : "1px solid #ccc",
-                                borderRadius: "6px",
-                              }}
-                              onClick={() => {
-                                setMainIndex(index);
-                                setPosts((prev) => ({
-                                  ...prev,
-                                  mainIndex: index,
-                                }));
-                              }}
+                              alt=""
+                              className={`preview-img ${index === mainIndex ? "active" : ""}`}
+                              onClick={() => setMainIndex(index)}
                             />
                             <div className="d-flex gap-1">
-                              <button
-                                type="button"
-                                className="btn btn-sm btn-outline-light"
-                                disabled={index === 0}
-                                onClick={() => moveImage(index, index - 1)}
-                                style={{ padding: "0 6px" }}
-                              >
-                                ←
-                              </button>
-                              <button
-                                type="button"
-                                className="btn btn-sm btn-outline-light"
-                                disabled={index === previewImages.length - 1}
-                                onClick={() => moveImage(index, index + 1)}
-                                style={{ padding: "0 6px" }}
-                              >
-                                →
-                              </button>
+                              <button type="button" className="btn btn-sm btn-outline-light" disabled={index === 0} onClick={() => moveImage(index, index - 1)}>←</button>
+                              <button type="button" className="btn btn-sm btn-outline-light" disabled={index === previewImages.length - 1} onClick={() => moveImage(index, index + 1)}>→</button>
                             </div>
                           </div>
                         ))}
                       </div>
                     </div>
                   )}
+
                   <div className="form__input">
-                    <label htmlFor="">Title</label>
-                    <input
-                      type="text"
-                      name="title"
-                      placeholder="Enter Name"
-                      onChange={(e) =>
-                        setPosts({ ...posts, title: e.target.value })
-                      }
-                    />
+                    <label>Title</label>
+                    <input type="text" placeholder="Enter title" value={posts.title} onChange={(e) => setPosts({ ...posts, title: e.target.value })} />
                   </div>
 
                   <div className="form__input">
-                    <label htmlFor="">Description</label>
-                    <textarea
-                      name="description"
-                      id=""
-                      rows="7"
-                      placeholder="Enter description"
-                      className="w-100"
-                      onChange={(e) =>
-                        setPosts({ ...posts, description: e.target.value })
-                      }
-                    ></textarea>
+                    <label>Description</label>
+                    <textarea rows="7" placeholder="Enter description" className="w-100" value={posts.description} onChange={(e) => setPosts({ ...posts, description: e.target.value })} />
                   </div>
+
                   <div className="form__input">
-                    <label htmlFor="">Price (Include Delivery Charges)</label>
-                    <input
-                      type="number"
-                      name="price"
-                      placeholder="Enter Name"
-                      onChange={(e) =>
-                        setPosts({ ...posts, price: e.target.value })
-                      }
-                    />
+                    <label>Price (Include Delivery Charges)</label>
+                    <input type="number" placeholder="Enter price" value={posts.price} onChange={(e) => setPosts({ ...posts, price: e.target.value })} />
                   </div>
+
                   <div className="form__input">
-                    <label htmlFor="">Count</label>
-                    <input
-                      type="number"
-                      name="count"
-                      placeholder="Enter Name"
-                      onChange={(e) =>
-                        setPosts({ ...posts, count: e.target.value })
-                      }
-                    />
+                    <label>Count</label>
+                    <input type="number" placeholder="Enter count" value={posts.count} onChange={(e) => setPosts({ ...posts, count: e.target.value })} />
                   </div>
-                  <button
-                    type="button"
-                    className="bid__btn d-flex align-items-center gap-5 pad"
-                    onClick={handleAdd}
-                  >
+
+                  <button type="submit" className="bid__btn d-flex align-items-center gap-2">
                     <i className="ri-add-line"></i> Post
                   </button>
                 </form>
