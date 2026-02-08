@@ -1,4 +1,4 @@
-.common__section {
+.allProduct__common__section {
   background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../../Assets/images/hero.jpg") no-repeat center center;
   background-size: cover;
   padding: 80px 0;
@@ -7,8 +7,8 @@
   justify-content: center;
 }
 
-.common__section h2 {
- color: #fff;
+.allProduct__common__section h2 {
+  color: #fff;
 }
 
 /* Fix for Admin Sidebar/Panel overlap and scrolling */
