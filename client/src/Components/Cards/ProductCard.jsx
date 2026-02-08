@@ -5,6 +5,7 @@ import "./card.css";
 
 const ProductCard = (props) => {
   const productId = props.product?.id ?? props.product?._id;
+  const detailsPath = productId ? `/aProduct/${productId}` : "/";
 
   const handleCardClick = (e) => {
     // Save scroll position when clicking on artwork
@@ -35,7 +36,7 @@ const ProductCard = (props) => {
       <div className="nft__content">
         <h5 className="nft__title">
           <Link 
-            to={`/aProduct/${productId}`}
+            to={detailsPath}
             onClick={handleCardClick}
           >
             {props.product.title}
@@ -58,7 +59,7 @@ const ProductCard = (props) => {
 
         <div className="mt-3 d-flex align-items-center justify-content-between gap-2">
           <Link 
-            to={`/aProduct/${productId}`}
+            to={detailsPath}
             className="bid__btn d-flex align-items-center gap-1"
             style={{ textDecoration: 'none', color: 'inherit' }}
             onClick={handleCardClick}

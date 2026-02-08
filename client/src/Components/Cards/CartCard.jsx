@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -8,6 +9,8 @@ import "./card.css";
 const CartCard = (props) => {
   const [showModal, setShowModal] = useState(false);
   const [deleteData, setDeleteData] = useState([]);
+
+  const productId = props.product?.id ?? props.product?._id;
 
   useEffect(() => {
     setDeleteData({
@@ -44,9 +47,7 @@ const CartCard = (props) => {
 
       <div className="nft__content">
         <h5 className="nft__title">
-          <Link to={`/aProduct/${props.product._id}`}>
-            {props.product.title}
-          </Link>
+          <Link to={`/aProduct/${productId}`}>{props.product.title}</Link>
         </h5>
 
         <div className="creator__info-wrapper d-flex gap-3">

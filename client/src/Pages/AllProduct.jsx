@@ -42,8 +42,14 @@ function AllProducts() {
             </Col>
 
             {products && products.length > 0 ? (
-              products.map((product) => (
-                <Col lg="3" md="4" sm="6" className="mb-4" key={product._id}>
+              products.map((product, index) => (
+                <Col
+                  lg="3"
+                  md="4"
+                  sm="6"
+                  className="mb-4"
+                  key={product?.id ?? product?._id ?? index}
+                >
                   <ProductCard product={product} />
                 </Col>
               ))

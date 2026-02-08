@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import DeletePopUp from "../PopUps/DeletePopUp";
@@ -7,8 +8,10 @@ const MyProductCard = (props) => {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
 
+  const productId = props.product?.id ?? props.product?._id;
+
   const handleUpdate = () => {
-    navigate(`/updatePost/${props.product._id}`)
+    navigate(`/updatePost/${productId}`);
   };
 
   return (
@@ -19,9 +22,7 @@ const MyProductCard = (props) => {
 
       <div className="nft__content">
         <h5 className="nft__title">
-          <Link to={`/aProduct/${props.product._id}`}>
-            {props.product.title}
-          </Link>
+          <Link to={`/aProduct/${productId}`}>{props.product.title}</Link>
         </h5>
 
         <div className="creator__info-wrapper d-flex gap-3">
@@ -59,7 +60,14 @@ const MyProductCard = (props) => {
             <i className="ri-refresh-line"></i> Update
           </button>
         </div>
-        {showModal && <DeletePopUp setShowModal={setShowModal} postName={props.product.title} id={props.product._id} userId={props.product.createdBy._id} />}
+        {showModal && (
+          <DeletePopUp
+            setShowModal={setShowModal}
+            postName={props.product.title}
+            id={productId}
+            userId={props.product.createdBy._id}
+          />
+        )}
       </div>
     </div>
   );

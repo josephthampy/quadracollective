@@ -1,8 +1,11 @@
+
 import React from "react";
 import { Link } from "react-router-dom";
 import "./card.css";
 
 const BoughtCard = (props) => {
+  const productId = props.product?.id ?? props.product?._id;
+
   return (
     <div className="single__nft__card">
       <div className="nft__img">
@@ -11,9 +14,7 @@ const BoughtCard = (props) => {
 
       <div className="nft__content">
         <h5 className="nft__title">
-          <Link to={`/aProduct/${props.product._id}`}>
-            {props.product.title}
-          </Link>
+          <Link to={`/aProduct/${productId}`}>{props.product.title}</Link>
         </h5>
 
         <div className="creator__info-wrapper d-flex gap-3">

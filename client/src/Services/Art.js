@@ -1,6 +1,10 @@
 // Simplified art service for personal portfolio
 import axios from "axios";
-const url = process.env.REACT_APP_API_URL || "http://localhost:8000";
+const url =
+  process.env.REACT_APP_API_URL ||
+  (process.env.NODE_ENV === "production"
+    ? "https://quadracollective-production.up.railway.app"
+    : "http://localhost:8000");
 
 export const getSomePosts = async () => {
   return await axios({
