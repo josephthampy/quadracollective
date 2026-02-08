@@ -158,6 +158,31 @@ const Post = () => {
     }));
   };
 
+  const removeImage = (index) => {
+    const existingFiles = Array.isArray(posts.post) ? posts.post : [];
+    const newFiles = [...existingFiles];
+    newFiles.splice(index, 1);
+
+    const newPreviews = [...previewImages];
+    newPreviews.splice(index, 1);
+
+    // Adjust mainIndex
+    let newMainIndex = mainIndex;
+    if (index === mainIndex) {
+      newMainIndex = 0;
+    } else if (index < mainIndex) {
+      newMainIndex = mainIndex - 1;
+    }
+
+    setPreviewImages(newPreviews);
+    setMainIndex(newMainIndex);
+    setPosts((prev) => ({
+      ...prev,
+      post: newFiles,
+      mainIndex: newMainIndex,
+    }));
+  };
+
   const handleAdd = async (e) => {
     e.preventDefault();
     toast.info("Post button clicked - processing...");
@@ -256,7 +281,7 @@ const Post = () => {
             <Col lg="9" md="8" sm="6">
               <div className="create__item">
                 <form>
-                  {previewImages.length > 1 && (
+                  {previewImages.length > 0 && (
                     <div className="form__input">
                       <label htmlFor="">Reorder & select main image</label>
                       <div className="d-flex flex-wrap gap-3 align-items-center">
@@ -268,8 +293,30 @@ const Post = () => {
                               flexDirection: "column",
                               alignItems: "center",
                               gap: "4px",
+                              position: "relative"
                             }}
                           >
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-danger"
+                              style={{
+                                position: "absolute",
+                                top: "-8px",
+                                right: "-8px",
+                                borderRadius: "50%",
+                                width: "20px",
+                                height: "20px",
+                                padding: "0",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                fontSize: "12px",
+                                zIndex: 1
+                              }}
+                              onClick={() => removeImage(index)}
+                            >
+                              ×
+                            </button>
                             <img
                               src={img}
                               alt={`preview-${index}`}
