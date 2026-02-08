@@ -7,6 +7,11 @@ const ProductCard = (props) => {
   const productId = props.product?.id ?? props.product?._id;
   const detailsPath = productId ? `/aProduct/${productId}` : "/";
 
+  const normalizeUrl = (value) => {
+    if (typeof value !== "string") return value;
+    return value.trim();
+  };
+
   const placeholderImg =
     "data:image/svg+xml;charset=UTF-8," +
     encodeURIComponent(
@@ -17,8 +22,8 @@ const ProductCard = (props) => {
     );
 
   const imgSrc =
-    props.product?.post ||
-    (Array.isArray(props.product?.images) ? props.product.images[0] : null) ||
+    normalizeUrl(props.product?.post) ||
+    (Array.isArray(props.product?.images) ? normalizeUrl(props.product.images[0]) : null) ||
     placeholderImg;
 
   const handleCardClick = (e) => {
