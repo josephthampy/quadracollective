@@ -196,21 +196,77 @@ const Post = () => {
                   {previewImages.length > 0 && (
                     <div className="form__input">
                       <label>Reorder & select main image</label>
-                      <div className="preview-grid">
+                      <div className="preview-grid" style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "20px",
+                        padding: "20px",
+                        background: "rgba(255, 255, 255, 0.5)",
+                        borderRadius: "12px",
+                        marginTop: "15px",
+                        width: "100%",
+                        minHeight: "120px"
+                      }}>
                         {previewImages.map((img, index) => (
-                          <div key={index} className="preview-item">
-                            <button type="button" className="btn btn-sm btn-danger remove-btn" onClick={() => removeImage(index)}>×</button>
-                            <img
-                              src={img}
-                              alt=""
-                              className={`preview-img ${index === mainIndex ? "active" : ""}`}
-                              onClick={() => setMainIndex(index)}
-                            />
-                            <div className="d-flex gap-1">
-                              <button type="button" className="btn btn-sm btn-outline-light" disabled={index === 0} onClick={() => moveImage(index, index - 1)}>←</button>
-                              <button type="button" className="btn btn-sm btn-outline-light" disabled={index === previewImages.length - 1} onClick={() => moveImage(index, index + 1)}>→</button>
+                          img && (
+                            <div key={index} className="preview-item" style={{
+                              position: "relative",
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center",
+                              gap: "8px",
+                              width: "90px"
+                            }}>
+                              <button
+                                type="button"
+                                className="remove-btn"
+                                style={{
+                                  position: "absolute",
+                                  top: "-12px",
+                                  right: "-12px",
+                                  borderRadius: "50%",
+                                  width: "28px",
+                                  height: "28px",
+                                  padding: "0",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  fontSize: "18px",
+                                  zIndex: "1000",
+                                  backgroundColor: "#ff4444",
+                                  border: "2px solid #ffffff",
+                                  color: "#ffffff",
+                                  cursor: "pointer",
+                                  boxShadow: "0 4px 8px rgba(0,0,0,0.3)",
+                                  lineHeight: "1"
+                                }}
+                                onClick={() => removeImage(index)}
+                              >
+                                ×
+                              </button>
+                              <img
+                                src={img}
+                                alt=""
+                                className={`preview-img ${index === mainIndex ? "active" : ""}`}
+                                style={{
+                                  width: "90px",
+                                  height: "90px",
+                                  objectFit: "cover",
+                                  cursor: "pointer",
+                                  borderRadius: "8px",
+                                  transition: "all 0.3s ease",
+                                  border: index === mainIndex ? "3px solid #8b0000" : "2px solid transparent",
+                                  background: "#fff",
+                                  boxShadow: "0 4px 6px rgba(0,0,0,0.1)"
+                                }}
+                                onClick={() => setMainIndex(index)}
+                              />
+                              <div className="d-flex gap-1">
+                                <button type="button" className="btn btn-sm btn-outline-light" disabled={index === 0} onClick={() => moveImage(index, index - 1)}>←</button>
+                                <button type="button" className="btn btn-sm btn-outline-light" disabled={index === previewImages.length - 1} onClick={() => moveImage(index, index + 1)}>→</button>
+                              </div>
                             </div>
-                          </div>
+                          )
                         ))}
                       </div>
                     </div>
