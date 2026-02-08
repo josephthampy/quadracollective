@@ -86,18 +86,19 @@ const Post = () => {
 
     setPosts({ ...posts, post: combined });
 
-    // Force synchronous preview state update
-    const currentPreviews = [...previewImages];
-    const startIndex = existingFiles.length;
-
+    // Using a more reliable way to update previews without losing indices
     newFiles.forEach((file, i) => {
       const reader = new FileReader();
       const targetIndex = startIndex + i;
       reader.onload = (evt) => {
         setPreviewImages((prev) => {
-          const updated = [...prev];
-          updated[targetIndex] = evt.target.result;
-          return updated;
+          const next = [...prev];
+          // Ensure the array is long enough
+          while (next.length <= targetIndex) {
+            next.push(null);
+          }
+          next[targetIndex] = evt.target.result;
+          return next;
         });
       };
       reader.readAsDataURL(file);
@@ -234,17 +235,23 @@ const Post = () => {
                                   alignItems: "center",
                                   justifyContent: "center",
                                   fontSize: "18px",
-                                  zIndex: "1000",
+                                  zIndex: "9999",
                                   backgroundColor: "#ff4444",
                                   border: "2px solid #ffffff",
                                   color: "#ffffff",
                                   cursor: "pointer",
                                   boxShadow: "0 4px 8px rgba(0,0,0,0.3)",
-                                  lineHeight: "1"
+                                  lineHeight: "1",
+                                  visibility: "visible",
+                                  opacity: "1"
                                 }}
-                                onClick={() => removeImage(index)}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  removeImage(index);
+                                }}
                               >
-                                ×
+                                &times;
                               </button>
                               <img
                                 src={img}
@@ -264,8 +271,8 @@ const Post = () => {
                                 onClick={() => setMainIndex(index)}
                               />
                               <div className="d-flex gap-1">
-                                <button type="button" className="btn btn-sm btn-outline-light" disabled={index === 0} onClick={() => moveImage(index, index - 1)}>←</button>
-                                <button type="button" className="btn btn-sm btn-outline-light" disabled={index === previewImages.length - 1} onClick={() => moveImage(index, index + 1)}>→</button>
+                                <button type="button" className="btn btn-sm btn-outline-light" disabled={index === 0} onClick={() => moveImage(index, index - 1)}>{"\u2190"}</button>
+                                <button type="button" className="btn btn-sm btn-outline-light" disabled={index === previewImages.length - 1} onClick={() => moveImage(index, index + 1)}>{"\u2192"}</button>
                               </div>
                             </div>
                           )
