@@ -92,7 +92,7 @@ module.exports.postArt = async (req, res) => {
   try {
     const { Pool } = require('pg');
     const pool = new Pool({
-      connectionString: process.env.MONGO_URI,
+      connectionString: process.env.DATABASE_URL || process.env.MONGO_URI,
     });
     
     const query = `
@@ -164,7 +164,7 @@ module.exports.getPosts = async (req, res) => {
   try {
     const { Pool } = require('pg');
     const pool = new Pool({
-      connectionString: process.env.MONGO_URI,
+      connectionString: process.env.DATABASE_URL || process.env.MONGO_URI,
     });
     
     // Get total count of unsold posts
@@ -209,7 +209,7 @@ module.exports.getSomePosts = async (req, res) => {
   try {
     const { Pool } = require('pg');
     const pool = new Pool({
-      connectionString: process.env.MONGO_URI,
+      connectionString: process.env.DATABASE_URL || process.env.MONGO_URI,
     });
     
     const result = await pool.query(
@@ -237,7 +237,7 @@ module.exports.deletePost = async (req, res) => {
   try {
     const { Pool } = require('pg');
     const pool = new Pool({
-      connectionString: process.env.MONGO_URI,
+      connectionString: process.env.DATABASE_URL || process.env.MONGO_URI,
     });
     
     console.log('deletePost called with id:', id, 'type:', typeof id);
@@ -320,7 +320,7 @@ module.exports.updatePost = async (req, res) => {
     
     const { Pool } = require('pg');
     const pool = new Pool({
-      connectionString: process.env.MONGO_URI,
+      connectionString: process.env.DATABASE_URL || process.env.MONGO_URI,
     });
     
     // Parse ID as integer if possible
@@ -392,7 +392,7 @@ module.exports.getAPost = async (req, res) => {
     
     const { Pool } = require('pg');
     const pool = new Pool({
-      connectionString: process.env.MONGO_URI,
+      connectionString: process.env.DATABASE_URL || process.env.MONGO_URI,
     });
     
     // Handle different ID formats
@@ -453,7 +453,7 @@ module.exports.getAllPosts = async (req, res) => {
   try {
     const { Pool } = require('pg');
     const pool = new Pool({
-      connectionString: process.env.MONGO_URI,
+      connectionString: process.env.DATABASE_URL || process.env.MONGO_URI,
     });
     
     const result = await pool.query(

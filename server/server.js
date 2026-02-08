@@ -4,7 +4,7 @@ require('dotenv').config();
 
 // PostgreSQL connection
 const pool = new Pool({
-  connectionString: process.env.MONGO_URI, // Using same variable name for compatibility
+  connectionString: process.env.DATABASE_URL || process.env.MONGO_URI, // Prefer standard DATABASE_URL
 });
 
 // Test database connection
@@ -116,7 +116,7 @@ app.get("/test-admin", async (req, res) => {
   try {
     const { Pool } = require('pg');
     const pool = new Pool({
-      connectionString: process.env.MONGO_URI,
+      connectionString: process.env.DATABASE_URL || process.env.MONGO_URI,
     });
     
     const result = await pool.query('SELECT id, title FROM posts ORDER BY id ASC LIMIT 5');
