@@ -14,6 +14,12 @@ function SinglePost() {
   const { id } = useParams();
 
   useEffect(() => {
+    if (!id || id === "undefined" || Number.isNaN(parseInt(id, 10))) {
+      toast.error("Invalid artwork id");
+      navigate("/", { replace: true });
+      return;
+    }
+
     // Get scroll position from router state
     const scrollPosition = location.state?.scrollPosition || window.scrollY || document.documentElement.scrollTop;
     sessionStorage.setItem('homeScrollPosition', scrollPosition.toString());
@@ -38,7 +44,7 @@ function SinglePost() {
     };
 
     load();
-  }, [id, location.state]);
+  }, [id, location.state, navigate]);
 
   const handleBackToHome = () => {
     // Get saved scroll position

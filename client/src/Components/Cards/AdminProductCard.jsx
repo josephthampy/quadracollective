@@ -5,6 +5,7 @@ import "./card.css";
 
 const AdminProductCard = (props) => {
   const [showModal, setShowModal] = useState(false);
+  const postId = props.posts?.id ?? props.posts?._id;
 
   return (
     <div className="single__nft__card m-2">
@@ -53,8 +54,8 @@ const AdminProductCard = (props) => {
         <DeletePopUp
           setShowModal={setShowModal}
           postName={props.posts.title}
-          id={props.posts._id}
-          userId={props.posts.createdBy}
+          id={postId}
+          userId={props.posts.createdBy?._id}
         />
       )}
     </div>

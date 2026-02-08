@@ -11,11 +11,12 @@ const CartCard = (props) => {
   const [deleteData, setDeleteData] = useState([]);
 
   const productId = props.product?.id ?? props.product?._id;
+  const detailsPath = productId ? `/aProduct/${productId}` : "/";
 
   useEffect(() => {
     setDeleteData({
       ...deleteData,
-      id: props.product._id,
+      id: productId,
       userId: props.userId,
     });
   }, []);
@@ -47,7 +48,7 @@ const CartCard = (props) => {
 
       <div className="nft__content">
         <h5 className="nft__title">
-          <Link to={`/aProduct/${productId}`}>{props.product.title}</Link>
+          <Link to={detailsPath}>{props.product.title}</Link>
         </h5>
 
         <div className="creator__info-wrapper d-flex gap-3">

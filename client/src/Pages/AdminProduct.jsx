@@ -24,7 +24,7 @@ function AdminProduct() {
           navigate("/");
         }
       });
-      getPost(page,limit).then((data) => {
+      getPost(page, limit).then((data) => {
         setPosts(data.data.result);
         setTotalPages(data.data.totalPage);
       });
@@ -46,8 +46,8 @@ function AdminProduct() {
             </Col>
 
             {posts.map((post, key) => (
-              <Col lg="3" md="4" sm="6" className="mb-4" key={key}>
-                <AdminProductCard posts={post} key={post._id} />
+              <Col lg="3" md="4" sm="6" className="mb-4" key={post?.id ?? post?._id ?? key}>
+                <AdminProductCard posts={post} />
               </Col>
             ))}
             <div>
