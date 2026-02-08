@@ -1,21 +1,22 @@
 .create__item {
   padding: 30px;
   background: rgba(245, 230, 211, 0.9);
-  border-radius: 120px;
+  border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(139, 0, 0, 0.1);
 }
 
 .preview-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 15px;
   padding: 15px;
   background: rgba(255, 255, 255, 0.5);
   border-radius: 8px;
   margin-top: 10px;
   width: 100%;
+  min-height: 110px;
 }
 
 .preview-item {
@@ -24,6 +25,7 @@
   flex-direction: column;
   align-items: center;
   gap: 5px;
+  width: 80px;
 }
 
 .preview-img {
@@ -34,6 +36,7 @@
   border-radius: 6px;
   transition: all 0.3s ease;
   border: 2px solid transparent;
+  background: #eee;
 }
 
 .preview-img.active {
@@ -46,21 +49,27 @@
 }
 
 .remove-btn {
-  position: absolute;
-  top: -8px;
-  right: -8px;
+  position: absolute !important;
+  top: -10px !important;
+  right: -10px !important;
   border-radius: 50% !important;
-  width: 22px !important;
-  height: 22px !important;
+  width: 24px !important;
+  height: 24px !important;
   padding: 0 !important;
   display: flex !important;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px !important;
-  z-index: 10;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 16px !important;
+  z-index: 100 !important;
   background-color: #dc3545 !important;
-  border: none !important;
+  border: 2px solid white !important;
   color: white !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+}
+
+.remove-btn:hover {
+  background-color: #bd2130 !important;
 }
 
 .form__input input, 
@@ -70,6 +79,7 @@
   color: #5d4037;
   padding: 8px 15px;
   border-radius: 5px;
+  width: 100%;
 }
 
 .form__input label {
