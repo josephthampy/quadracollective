@@ -7,6 +7,8 @@ import { Container, Row, Col } from "reactstrap";
 import "../Assets/css/create-item.css";
 import { toast } from "react-toastify";
 
+ const BUILD_ID = "post-preview-debug-v1";
+
 const ProfilePic = styled.div`
   display: flex;
   justify-content: center;
@@ -60,6 +62,11 @@ const Post = () => {
     post: [],
   });
   const [adminPassword, setAdminPassword] = useState("");
+
+   const selectedCount = Array.isArray(posts.post) ? posts.post.length : 0;
+   const loadedCount = Array.isArray(previewImages)
+     ? previewImages.filter(Boolean).length
+     : 0;
 
   useEffect(() => {
     const storedPassword = localStorage.getItem("adminPassword");
@@ -194,19 +201,32 @@ const Post = () => {
             <Col lg="9" md="8" sm="6">
               <div className="create__item">
                 <form onSubmit={handleAdd}>
+                  <div style={{
+                    fontSize: "12px",
+                    color: "#8b0000",
+                    marginBottom: "10px",
+                    fontWeight: "600",
+                    opacity: 0.9
+                  }}>
+                    BUILD: {BUILD_ID} | selected: {selectedCount} | loaded: {loadedCount}
+                  </div>
                   {previewImages.length > 0 && (
                     <div className="form__input">
                       <label style={{ color: "#8b0000", fontWeight: "600", marginBottom: "10px", display: "block" }}>Reorder & select main image</label>
                       <div style={{
                         display: "flex",
-                        flexWrap: "wrap",
+                        flexWrap: "nowrap",
                         gap: "20px",
                         padding: "20px",
                         background: "rgba(255, 255, 255, 0.5)",
                         borderRadius: "12px",
                         marginTop: "15px",
                         width: "100%",
-                        minHeight: "120px"
+                        minHeight: "120px",
+                        overflowX: "auto",
+                        overflowY: "hidden",
+                        WebkitOverflowScrolling: "touch",
+                        marginBottom: "16px"
                       }}>
                         {previewImages.map((img, index) => (
                           <div key={index} style={{
@@ -215,7 +235,8 @@ const Post = () => {
                             flexDirection: "column",
                             alignItems: "center",
                             gap: "8px",
-                            width: "90px"
+                            width: "90px",
+                            flex: "0 0 auto"
                           }}>
                             <div 
                               onClick={(e) => removeImage(e, index)}
