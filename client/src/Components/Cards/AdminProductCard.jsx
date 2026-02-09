@@ -7,10 +7,39 @@ const AdminProductCard = (props) => {
   const [showModal, setShowModal] = useState(false);
   const postId = props.posts?.id ?? props.posts?._id;
 
+  const normalizeUrl = (value) => {
+    if (typeof value !== "string") return value;
+    return value.trim();
+  };
+
+  const placeholderImg =
+    "data:image/svg+xml;charset=UTF-8," +
+    encodeURIComponent(
+      `<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600'>
+        <rect width='100%' height='100%' fill='#f5e6d3'/>
+        <text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='#8b0000' font-family='Arial' font-size='24'>No Image</text>
+      </svg>`
+    );
+
+  const imgSrc =
+    normalizeUrl(props.posts?.post) ||
+    (Array.isArray(props.posts?.images)
+      ? normalizeUrl(props.posts.images[0])
+      : null) ||
+    placeholderImg;
+
   return (
     <div className="single__nft__card m-2">
       <div className="nft__img">
-        <img src={props.posts.post} alt="" className="w-100" />
+        <img
+          src={imgSrc}
+          alt={props.posts?.title || "Artwork"}
+          className="w-100"
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = placeholderImg;
+          }}
+        />
       </div>
 
       <div className="nft__content">
