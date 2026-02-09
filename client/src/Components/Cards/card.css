@@ -20,6 +20,19 @@
   }
 }
 
+.product-card .nft__img {
+  width: 100%;
+  height: 320px;
+  overflow: hidden;
+}
+
+.product-card .nft__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .dp{
   color: #5d4037;
 }
