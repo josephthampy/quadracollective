@@ -44,10 +44,10 @@
 
 .single__nft__card .nft__img,
 .product-card .nft__img {
-  width: 100% !important;
+  width: calc(100% + 28px) !important;
   height: auto !important;
   aspect-ratio: 1 / 1 !important;
-  margin-bottom: 28px !important;
+  margin: -14px -14px 28px !important;
   overflow: hidden !important;
   border-radius: 10px !important;
   display: flex !important;
