@@ -63,11 +63,6 @@ const Post = () => {
   });
   const [adminPassword, setAdminPassword] = useState("");
 
-   const selectedCount = Array.isArray(posts.post) ? posts.post.length : 0;
-   const loadedCount = Array.isArray(previewImages)
-     ? previewImages.filter(Boolean).length
-     : 0;
-
   useEffect(() => {
     const storedPassword = localStorage.getItem("adminPassword");
     if (!storedPassword) {
