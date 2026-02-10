@@ -39,7 +39,7 @@ const ProductCard = (props) => {
   };
 
   return (
-    <div className="single__nft__card product-card">
+    <div className="single__nft__card">
       {/* 3D Background Elements */}
       <div className="product-card-bg-shape product-card-bg-shape-1"></div>
       <div className="product-card-bg-shape product-card-bg-shape-2"></div>
@@ -47,7 +47,7 @@ const ProductCard = (props) => {
       <div className="product-card-bg-shape product-card-bg-shape-4"></div>
       <div className="product-card-bg-shape product-card-bg-shape-5"></div>
       <div className="product-card-bg-shape product-card-bg-shape-6"></div>
-      
+
       <div className="nft__img">
         <img
           src={imgSrc}
@@ -70,8 +70,8 @@ const ProductCard = (props) => {
           </Link>
         </h5>
 
-        <div className="creator__info-wrapper d-flex gap-3">
-          <div className="creator__info w-100 d-flex align-items-center justify-content-between">
+        <div className="creator__info-wrapper">
+          <div className="creator__info">
             <div>
               <h6>Description</h6>
               <p className="product-card-description">{props.product?.description || ""}</p>
@@ -84,11 +84,17 @@ const ProductCard = (props) => {
           </div>
         </div>
 
-        <div className="mt-3 d-flex align-items-center justify-content-between gap-2">
+        <div
+          style={{
+            marginTop: "1rem",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <Link 
             to={detailsPath}
-            className="bid__btn d-flex align-items-center gap-1"
-            style={{ textDecoration: 'none', color: 'inherit' }}
+            className="bid__btn"
             onClick={handleCardClick}
           >
             <i className="ri-eye-line"></i> View Details
