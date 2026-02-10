@@ -20,6 +20,35 @@
   }
 }
 
+/* Global Card Image Layout Fix */
+.single__nft__card .nft__img,
+.product-card .nft__img {
+  width: 100% !important;
+  height: 320px !important;
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background-color: #f5e6d3 !important;
+}
+
+.single__nft__card .nft__img img,
+.product-card .nft__img img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+/* Ensure card content has consistent height */
+.nft__content {
+  padding: 15px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  min-height: 180px !important;
+}
+
 .dp{
   color: #5d4037;
 }
