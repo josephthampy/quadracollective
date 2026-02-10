@@ -23,7 +23,7 @@
 
 .single__nft__card,
 .product-card {
-  padding: 20px !important;
+  padding: 24px !important;
   background: rgba(245, 230, 211, 0.85) !important;
   border: 1px solid rgba(139, 0, 0, 0.18) !important;
   border-radius: 12px !important;
@@ -47,7 +47,7 @@
   width: 100% !important;
   height: auto !important;
   aspect-ratio: 1 / 1 !important;
-  margin-bottom: 12px !important;
+  margin-bottom: 14px !important;
   overflow: hidden !important;
   border-radius: 12px !important;
   display: flex !important;
@@ -68,11 +68,11 @@
 
 .single__nft__card .nft__content,
 .product-card .nft__content {
-  padding: 15px !important;
+  padding: 18px !important;
   display: flex !important;
   flex-direction: column !important;
   justify-content: space-between !important;
-  min-height: 140px !important;
+  min-height: 175px !important;
 }
 
 .single__nft__card .nft__title,
@@ -103,7 +103,7 @@
 .product-card .creator__info {
   display: flex !important;
   justify-content: space-between !important;
-  align-items: center !important;
+  align-items: flex-start !important;
   width: 100% !important;
 }
 
@@ -130,6 +130,8 @@
   -webkit-line-clamp: 2 !important;
   line-clamp: 2 !important;
   overflow: hidden !important;
+  margin-top: 6px !important;
+  margin-bottom: 8px !important;
   font-size: 0.9rem !important;
   line-height: 1.35 !important;
 }
