@@ -7,8 +7,6 @@ import { Container, Row, Col } from "reactstrap";
 import "../Assets/css/create-item.css";
 import { toast } from "react-toastify";
 
- const BUILD_ID = "post-preview-debug-v1";
-
 const ProfilePic = styled.div`
   display: flex;
   justify-content: center;
@@ -225,15 +223,6 @@ const Post = () => {
             <Col lg="9" md="8" sm="6">
               <div className="create__item">
                 <form onSubmit={handleAdd}>
-                  <div style={{
-                    fontSize: "12px",
-                    color: "#8b0000",
-                    marginBottom: "10px",
-                    fontWeight: "600",
-                    opacity: 0.9
-                  }}>
-                    BUILD: {BUILD_ID} | selected: {selectedCount} | loaded: {loadedCount}
-                  </div>
                   {previewImages.length > 0 && (
                     <div className="form__input">
                       <label style={{ color: "#8b0000", fontWeight: "600", marginBottom: "10px", display: "block" }}>Reorder & select main image</label>
