@@ -1,5 +1,10 @@
 const fs = require("fs");
 const path = require("path");
+const { Pool } = require("pg");
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL || process.env.MONGO_URI,
+});
 
 module.exports.postArt = async (req, res) => {
   let response = {
@@ -90,11 +95,6 @@ module.exports.postArt = async (req, res) => {
   const post = imageUrls[mainIndex]; // main image based on mainIndex
 
   try {
-    const { Pool } = require('pg');
-    const pool = new Pool({
-      connectionString: process.env.DATABASE_URL || process.env.MONGO_URI,
-    });
-    
     const query = `
       INSERT INTO posts (title, description, price, post, images, count)
       VALUES ($1, $2, $3, $4, $5, $6)
@@ -162,11 +162,6 @@ module.exports.getPosts = async (req, res) => {
   console.log('getPosts called with:', { page, limit, startIndex });
   
   try {
-    const { Pool } = require('pg');
-    const pool = new Pool({
-      connectionString: process.env.DATABASE_URL || process.env.MONGO_URI,
-    });
-    
     // Get total count of unsold posts
     const countResult = await pool.query('SELECT COUNT(*) FROM posts WHERE is_sold = false');
     const totalPosts = parseInt(countResult.rows[0].count);
@@ -207,11 +202,6 @@ module.exports.getSomePosts = async (req, res) => {
     result: "",
   };
   try {
-    const { Pool } = require('pg');
-    const pool = new Pool({
-      connectionString: process.env.DATABASE_URL || process.env.MONGO_URI,
-    });
-    
     const result = await pool.query(
       'SELECT id, title, description, price, post, images, count, created_at as "createdAt" FROM posts WHERE is_sold = false ORDER BY created_at DESC LIMIT 8'
     );
@@ -235,11 +225,6 @@ module.exports.deletePost = async (req, res) => {
     errMessage: "",
   };
   try {
-    const { Pool } = require('pg');
-    const pool = new Pool({
-      connectionString: process.env.DATABASE_URL || process.env.MONGO_URI,
-    });
-    
     console.log('deletePost called with id:', id, 'type:', typeof id);
     
     const parsedId = parseInt(id, 10);
@@ -326,11 +311,6 @@ module.exports.updatePost = async (req, res) => {
     
     console.log('updatePost called with id:', id, 'type:', typeof id);
     
-    const { Pool } = require('pg');
-    const pool = new Pool({
-      connectionString: process.env.DATABASE_URL || process.env.MONGO_URI,
-    });
-    
     const postId = parsedId;
     
     // Update the post
@@ -400,11 +380,6 @@ module.exports.getAPost = async (req, res) => {
       return res.status(400).send(response);
     }
     
-    const { Pool } = require('pg');
-    const pool = new Pool({
-      connectionString: process.env.DATABASE_URL || process.env.MONGO_URI,
-    });
-
     const query = 'SELECT id, title, description, price, post, images, count, created_at as "createdAt" FROM posts WHERE id = $1';
     console.log('Using parsedId:', parsedId, 'query:', query);
     const result = await pool.query(query, [parsedId]);

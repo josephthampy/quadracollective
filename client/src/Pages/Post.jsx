@@ -55,6 +55,7 @@ const Post = () => {
   const [previewImages, setPreviewImages] = useState([]);
   const [mainIndex, setMainIndex] = useState(0);
   const [isPosting, setIsPosting] = useState(false);
+  const [uploadPercent, setUploadPercent] = useState(null);
   const [posts, setPosts] = useState({
     title: "",
     description: "",
@@ -158,11 +159,19 @@ const Post = () => {
     }
 
     setIsPosting(true);
+    setUploadPercent(0);
 
     try {
       toast.info("Posting...", { autoClose: 1200 });
       const formData = { ...posts, mainIndex };
-      const response = await postArt(formData, adminPassword);
+      const response = await postArt(formData, adminPassword, (evt) => {
+        const total = evt?.total;
+        const loaded = evt?.loaded;
+        if (typeof total === "number" && total > 0 && typeof loaded === "number") {
+          const pct = Math.min(100, Math.max(0, Math.round((loaded / total) * 100)));
+          setUploadPercent(pct);
+        }
+      });
       if (response.data.success) {
         toast.success("Posted successfully");
         navigate("/admin");
@@ -179,6 +188,7 @@ const Post = () => {
       toast.error(message);
     } finally {
       setIsPosting(false);
+      setUploadPercent(null);
     }
   };
 
@@ -291,7 +301,10 @@ const Post = () => {
                     disabled={isPosting}
                     style={{ opacity: isPosting ? 0.7 : 1, cursor: isPosting ? "not-allowed" : "pointer" }}
                   >
-                    <i className="ri-add-line"></i> {isPosting ? "Posting..." : "Post"}
+                    <i className="ri-add-line"></i>{" "}
+                    {isPosting
+                      ? `Uploading${typeof uploadPercent === "number" ? ` ${uploadPercent}%` : "..."}`
+                      : "Post"}
                   </button>
                 </form>
               </div>

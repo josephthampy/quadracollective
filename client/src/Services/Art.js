@@ -28,7 +28,7 @@ export const getAPost = async (id) => {
 };
 
 // Admin functions - require password
-export const postArt = async (form, adminPassword) => {
+export const postArt = async (form, adminPassword, onUploadProgress) => {
   const formData = new FormData();
   
   // Append text fields first (before files)
@@ -63,6 +63,7 @@ export const postArt = async (form, adminPassword) => {
     url: `${url}/postArt`,
     data: formData,
     headers: { "Content-Type": "multipart/form-data" },
+    onUploadProgress,
   });
 };
 
