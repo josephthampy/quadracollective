@@ -74,7 +74,7 @@ const ProductCard = (props) => {
           <div className="creator__info w-100 d-flex align-items-center justify-content-between">
             <div>
               <h6>Description</h6>
-              <p>{(props.product?.description || "").substring(0, 50)}...</p>
+              <p className="product-card-description">{props.product?.description || ""}</p>
             </div>
 
             <div>

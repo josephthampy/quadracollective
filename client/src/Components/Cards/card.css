@@ -45,7 +45,7 @@
 .single__nft__card .nft__img,
 .product-card .nft__img {
   width: 100% !important;
-  height: 320px !important;
+  height: 420px !important;
   margin-bottom: 15px !important;
   overflow: hidden !important;
   border-radius: 10px !important;
@@ -119,6 +119,15 @@
   color: #8b0000 !important;
   margin-bottom: 0 !important;
   font-weight: 500 !important;
+}
+
+.single__nft__card .creator__info .product-card-description,
+.product-card .creator__info .product-card-description {
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+  overflow: hidden !important;
 }
 
 .single__nft__card .bid__btn,
