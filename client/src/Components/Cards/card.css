@@ -11,7 +11,8 @@
     font-size: 0.7rem !important;
   }
 
-  .bid__btn {
+  .single__nft__card .bid__btn,
+  .product-card .bid__btn {
     padding: 4px 20px !important;
     font-size: 0.6rem !important;
   }
@@ -22,17 +23,32 @@
 
 .single__nft__card,
 .product-card {
+  padding: 20px !important;
   background: rgba(245, 230, 211, 0.85) !important;
   border: 1px solid rgba(139, 0, 0, 0.18) !important;
   border-radius: 12px !important;
   box-shadow: 0 12px 28px rgba(139, 0, 0, 0.10) !important;
+  backdrop-filter: blur(10px) !important;
+  transition: transform 0.3s ease !important;
+}
+
+.single__nft__card:hover,
+.product-card:hover {
+  transform: translateY(-5px) !important;
+}
+
+.single__nft__card .product-card-bg-shape,
+.product-card .product-card-bg-shape {
+  display: none !important;
 }
 
 .single__nft__card .nft__img,
 .product-card .nft__img {
   width: 100% !important;
   height: 320px !important;
+  margin-bottom: 15px !important;
   overflow: hidden !important;
+  border-radius: 10px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -44,6 +60,7 @@
   width: 100% !important;
   height: 100% !important;
   object-fit: cover !important;
+  border-radius: 10px !important;
   display: block !important;
 }
 
@@ -54,6 +71,79 @@
   flex-direction: column !important;
   justify-content: space-between !important;
   min-height: 180px !important;
+}
+
+.single__nft__card .nft__title,
+.product-card .nft__title {
+  margin-bottom: 15px !important;
+}
+
+.single__nft__card .nft__title a,
+.product-card .nft__title a {
+  color: #8b0000 !important;
+  font-size: 1rem !important;
+  text-decoration: none !important;
+  font-weight: 500 !important;
+}
+
+.single__nft__card .nft__title a:hover,
+.product-card .nft__title a:hover {
+  color: #b22222 !important;
+}
+
+.single__nft__card .creator__info-wrapper,
+.product-card .creator__info-wrapper {
+  display: flex !important;
+  gap: 1rem !important;
+}
+
+.single__nft__card .creator__info,
+.product-card .creator__info {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+.single__nft__card .creator__info h6,
+.product-card .creator__info h6 {
+  font-size: 0.7rem !important;
+  color: #5d4037 !important;
+  margin-bottom: 0 !important;
+  font-weight: 300 !important;
+}
+
+.single__nft__card .creator__info p,
+.product-card .creator__info p {
+  font-size: 0.9rem !important;
+  color: #8b0000 !important;
+  margin-bottom: 0 !important;
+  font-weight: 500 !important;
+}
+
+.single__nft__card .bid__btn,
+.product-card .bid__btn {
+  border: none !important;
+  outline: none !important;
+  padding: 5px 22px !important;
+  background: #8b0000 !important;
+  border: 2px solid #8b0000 !important;
+  font-size: 0.9rem !important;
+  color: #fff !important;
+  border-radius: 50px !important;
+  transition: 0.3s !important;
+  font-weight: 500 !important;
+  text-decoration: none !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+}
+
+.single__nft__card .bid__btn:hover,
+.product-card .bid__btn:hover {
+  background: #f5e6d3 !important;
+  color: #8b0000 !important;
+  border-color: #8b0000 !important;
 }
 
 .dp{
