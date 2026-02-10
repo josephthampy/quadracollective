@@ -48,12 +48,11 @@ const ProductCard = (props) => {
       <div className="product-card-bg-shape product-card-bg-shape-5"></div>
       <div className="product-card-bg-shape product-card-bg-shape-6"></div>
       
-      <div className="nft__img" style={{ width: '100%', height: '320px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f5e6d3' }}>
+      <div className="nft__img">
         <img
           src={imgSrc}
           alt={props.product?.title || "Artwork"}
           className="w-100"
-          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
           onError={(e) => {
             e.currentTarget.onerror = null;
             e.currentTarget.src = placeholderImg;
