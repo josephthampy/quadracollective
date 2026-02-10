@@ -30,11 +30,12 @@ const AdminProductCard = (props) => {
 
   return (
     <div className="single__nft__card m-2">
-      <div className="nft__img">
+      <div className="nft__img" style={{ width: '100%', height: '320px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f5e6d3' }}>
         <img
           src={imgSrc}
           alt={props.posts?.title || "Artwork"}
           className="w-100"
+          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
           onError={(e) => {
             e.currentTarget.onerror = null;
             e.currentTarget.src = placeholderImg;
