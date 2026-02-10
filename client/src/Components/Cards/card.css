@@ -22,27 +22,27 @@
 
 .single__nft__card .nft__img {
   width: 100%;
-  height: 320px;
-  overflow: hidden;
+  height: 320px !important;
+  overflow: hidden !important;
 }
 
 .single__nft__card .nft__img img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: 100% !important;
+  object-fit: cover !important;
   display: block;
 }
 
 .product-card .nft__img {
   width: 100%;
-  height: 320px;
-  overflow: hidden;
+  height: 320px !important;
+  overflow: hidden !important;
 }
 
 .product-card .nft__img img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: 100% !important;
+  object-fit: cover !important;
   display: block;
 }
 
