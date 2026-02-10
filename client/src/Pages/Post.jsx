@@ -54,6 +54,7 @@ const Post = () => {
   const navigate = useNavigate();
   const [previewImages, setPreviewImages] = useState([]);
   const [mainIndex, setMainIndex] = useState(0);
+  const [isPosting, setIsPosting] = useState(false);
   const [posts, setPosts] = useState({
     title: "",
     description: "",
@@ -149,12 +150,17 @@ const Post = () => {
 
   const handleAdd = async (e) => {
     e.preventDefault();
+    if (isPosting) return;
+
     if (!posts.title || !posts.description || !posts.price || !posts.post.length) {
       toast.error("Please fill all required fields and upload images");
       return;
     }
 
+    setIsPosting(true);
+
     try {
+      toast.info("Posting...", { autoClose: 1200 });
       const formData = { ...posts, mainIndex };
       const response = await postArt(formData, adminPassword);
       if (response.data.success) {
@@ -164,7 +170,15 @@ const Post = () => {
         toast.error(response.data.message);
       }
     } catch (err) {
-      toast.error("Failed to post artwork");
+      const message =
+        err?.response?.data?.message ||
+        err?.response?.data?.errMessage ||
+        err?.message ||
+        "Failed to post artwork";
+      console.error("Post failed:", err);
+      toast.error(message);
+    } finally {
+      setIsPosting(false);
     }
   };
 
@@ -270,8 +284,14 @@ const Post = () => {
                     <input type="number" placeholder="Enter count" value={posts.count} onChange={(e) => setPosts({ ...posts, count: e.target.value })} />
                   </div>
 
-                  <button type="submit" className="bid__btn d-flex align-items-center gap-2">
-                    <i className="ri-add-line"></i> Post
+                  <button
+                    type="submit"
+                    className="bid__btn d-flex align-items-center gap-2"
+                    onClick={handleAdd}
+                    disabled={isPosting}
+                    style={{ opacity: isPosting ? 0.7 : 1, cursor: isPosting ? "not-allowed" : "pointer" }}
+                  >
+                    <i className="ri-add-line"></i> {isPosting ? "Posting..." : "Post"}
                   </button>
                 </form>
               </div>
