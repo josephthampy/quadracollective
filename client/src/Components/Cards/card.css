@@ -3,6 +3,11 @@
     font-size: 0.8rem !important;
   }
 
+  .single__nft__card .nft__img,
+  .product-card .nft__img {
+    height: 360px !important;
+  }
+
   .creator__info h6 {
     font-size: 0.6rem !important;
   }
@@ -45,7 +50,7 @@
 .single__nft__card .nft__img,
 .product-card .nft__img {
   width: 100% !important;
-  height: 300px !important;
+  height: 340px !important;
   margin-bottom: 15px !important;
   overflow: hidden !important;
   border-radius: 12px !important;
