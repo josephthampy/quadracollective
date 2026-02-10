@@ -54,14 +54,15 @@
   justify-content: center !important;
   background-color: transparent !important;
   box-shadow: none !important;
+  clip-path: inset(0 0 0 0) !important;
 }
 
 .single__nft__card .nft__img img,
 .product-card .nft__img img {
   width: 100% !important;
   height: 100% !important;
-  object-fit: contain !important;
-  border-radius: 10px !important;
+  object-fit: cover !important;
+  border-radius: 0 !important;
   display: block !important;
 }
 
