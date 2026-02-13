@@ -13,6 +13,27 @@ function SinglePost() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const { id } = useParams();
 
+  const apiBaseUrl =
+    process.env.REACT_APP_API_URL ||
+    (process.env.NODE_ENV === "production"
+      ? "https://quadracollective-production.up.railway.app"
+      : "http://localhost:8000");
+
+  const resolveImageUrl = (value) => {
+    if (typeof value !== "string") return null;
+
+    const trimmed = value.trim();
+    if (!trimmed) return null;
+
+    if (trimmed.startsWith("data:")) return trimmed;
+    if (trimmed.startsWith("https://")) return trimmed;
+    if (trimmed.startsWith("http://")) return `https://${trimmed.slice("http://".length)}`;
+    if (trimmed.startsWith("//")) return `https:${trimmed}`;
+    if (trimmed.startsWith("/")) return `${apiBaseUrl}${trimmed}`;
+
+    return `${apiBaseUrl}/${trimmed}`;
+  };
+
   useEffect(() => {
     if (!id || id === "undefined" || Number.isNaN(parseInt(id, 10))) {
       toast.error("Invalid artwork id");
@@ -65,18 +86,20 @@ function SinglePost() {
       navigate("/", { replace: false });
     }, 10);
   };
-  // The main image is identified by the post field
-  const allImages =
+  const rawImages =
     (product.images && product.images.length && product.images) ||
     (product.post ? [product.post] : []);
-  
-  // Find the main image and create display order (main first)
-  const mainImageUrl = product.post;
+
+  const mainImageUrl = resolveImageUrl(product.post);
+  const normalizedImages = (Array.isArray(rawImages) ? rawImages : [])
+    .map(resolveImageUrl)
+    .filter(Boolean);
+
   let displayImages = [];
-  
-  if (allImages.length > 0) {
-    // Put main image first, then add the rest in their original order (excluding main)
-    displayImages = [mainImageUrl, ...allImages.filter(img => img !== mainImageUrl)];
+  if (mainImageUrl) {
+    displayImages = [mainImageUrl, ...normalizedImages.filter((img) => img !== mainImageUrl)];
+  } else {
+    displayImages = normalizedImages;
   }
 
   const prevImage = () => {

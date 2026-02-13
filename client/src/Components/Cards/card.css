@@ -48,6 +48,8 @@
   height: auto !important;
   aspect-ratio: 1 / 1 !important;
   margin: -14px -14px 28px !important;
+  position: relative !important;
+  z-index: 2 !important;
   overflow: hidden !important;
   border-radius: 10px !important;
   display: flex !important;
@@ -70,6 +72,8 @@
 .product-card .nft__content {
   display: flex !important;
   flex-direction: column !important;
+  position: relative !important;
+  z-index: 2 !important;
 }
 
 .single__nft__card .nft__title,

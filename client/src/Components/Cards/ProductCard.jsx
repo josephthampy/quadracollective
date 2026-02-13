@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 import "./card.css";
@@ -7,9 +6,25 @@ const ProductCard = (props) => {
   const productId = props.product?.id ?? props.product?._id;
   const detailsPath = productId ? `/aProduct/${productId}` : "/";
 
-  const normalizeUrl = (value) => {
-    if (typeof value !== "string") return value;
-    return value.trim();
+  const apiBaseUrl =
+    process.env.REACT_APP_API_URL ||
+    (process.env.NODE_ENV === "production"
+      ? "https://quadracollective-production.up.railway.app"
+      : "http://localhost:8000");
+
+  const resolveImageUrl = (value) => {
+    if (typeof value !== "string") return null;
+
+    const trimmed = value.trim();
+    if (!trimmed) return null;
+
+    if (trimmed.startsWith("data:")) return trimmed;
+    if (trimmed.startsWith("https://")) return trimmed;
+    if (trimmed.startsWith("http://")) return `https://${trimmed.slice("http://".length)}`;
+    if (trimmed.startsWith("//")) return `https:${trimmed}`;
+    if (trimmed.startsWith("/")) return `${apiBaseUrl}${trimmed}`;
+
+    return `${apiBaseUrl}/${trimmed}`;
   };
 
   const placeholderImg =
@@ -22,8 +37,8 @@ const ProductCard = (props) => {
     );
 
   const imgSrc =
-    normalizeUrl(props.product?.post) ||
-    (Array.isArray(props.product?.images) ? normalizeUrl(props.product.images[0]) : null) ||
+    resolveImageUrl(props.product?.post) ||
+    (Array.isArray(props.product?.images) ? resolveImageUrl(props.product.images[0]) : null) ||
     placeholderImg;
 
   const handleCardClick = (e) => {
