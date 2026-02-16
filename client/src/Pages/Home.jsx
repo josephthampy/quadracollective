@@ -103,7 +103,7 @@ function Home() {
           <Row>
             <Col lg="12" className="mb-5 text-center artwork-title-section">
               <h2 style={{ color: '#8b0000', fontWeight: '600' }}>QuadraCollective</h2>
-              <p style={{ color: '#5d4037' }}>Discover unique artwork from talented artists</p>
+              <p style={{ color: '#5d4037' }}>Discover unique artworks</p>
             </Col>
 
             {/* Loading State */}
@@ -152,7 +152,7 @@ function Home() {
                     <Col lg="12">
                       <h4 className="text-center" style={{ color: '#5d4037' }}>No artwork available yet</h4>
                       <p className="text-center" style={{ color: '#5d4037' }}>
-                        Check back later for amazing artwork from our community!
+                        Check back later !
                       </p>
                     </Col>
                   )}
