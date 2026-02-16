@@ -94,7 +94,7 @@ const ProductCard = (props) => {
 
             <div>
               <h6>Price</h6>
-              <p>₹{props.product.price}</p>
+              <p>₹ {props.product.price}</p>
             </div>
           </div>
         </div>
